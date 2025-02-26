@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "944257168051",
+    "project_id": "pilwave",
+    "storage_bucket": "pilwave.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:944257168051:android:f0bf19effd7a3f7d57b6c6",
+        "android_client_info": {
+          "package_name": "com.example.pillware"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyEVz0sS6rudWnN5Ac4IEuQC0o3ghHFDs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
