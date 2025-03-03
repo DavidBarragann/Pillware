@@ -59,14 +59,8 @@ class LoginActivity : AppCompatActivity() {
                         "Error de autenticación.",
                         Toast.LENGTH_SHORT,
                     ).show()
-                    updateUI()
                 }
             }
-    }
-
-    private fun updateUI() {
-        val textViewTitulo = findViewById<TextView>(R.id.titulo)
-        textViewTitulo.text = "Inicio de sesión fallido"
     }
 
     private fun reload() {
