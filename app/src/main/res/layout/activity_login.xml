@@ -37,33 +37,62 @@
         android:id="@+id/bienvenido"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bienvenido"
+        android:layout_marginTop="24dp"
+        android:textSize="16sp"
         android:fontFamily="@font/leaguespartansemibold"
+        android:text="Bienvenido"
         android:textColor="@color/azulSP"
-        app:layout_constraintBottom_toTopOf="@+id/usuario"
         app:layout_constraintStart_toStartOf="@+id/usuario"
         app:layout_constraintTop_toBottomOf="@+id/titulo" />
 
-    <EditText
-        android:id="@+id/usuario"
+    <TextView
+        android:id="@+id/textocontrasena"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:textSize="25sp"
-        android:drawableStart="@drawable/baseline_person_24"
+        android:maxWidth="300dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/leaguespartanlight"
+        android:textSize="16sp"
+        android:textColor="@color/text"
+        android:maxLines="4"
+        android:text="Ingresar Email y contraseña adecuada para acceder a la aplicación."
+        app:layout_constraintStart_toStartOf="@+id/usuario"
+        app:layout_constraintEnd_toEndOf="@+id/usuario"
+        app:layout_constraintTop_toBottomOf="@+id/bienvenido" />
+
+    <TextView
+        android:id="@+id/emailtit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/leaguespartanmedium"
+        android:text="Email"
+        android:textColor="@color/text"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@+id/bienvenido"
+        app:layout_constraintTop_toBottomOf="@+id/textocontrasena" />
+
+    <EditText
+        android:id="@+id/usuario"
+        android:layout_width="300sp"
+        android:layout_height="48sp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/containertext"
         android:ems="10"
+        android:fontFamily="@font/leaguespartanregular"
+        android:hint="example@example.com"
         android:inputType="textEmailAddress"
+        android:textColorHint="@color/lightpurpletext"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titulo"
-        android:hint="Ingresa tu usuario" />
+        app:layout_constraintTop_toBottomOf="@+id/emailtit" />
 
     <EditText
         android:id="@+id/pass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:drawableStart="@drawable/baseline_lock_24"
         android:ems="10"
         android:hint="Ingresa tu contraseña"
         android:inputType="textPassword"
