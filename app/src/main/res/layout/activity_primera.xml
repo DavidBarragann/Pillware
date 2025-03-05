@@ -11,20 +11,48 @@
         android:id="@+id/IniciarSesion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="148dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="148dp"
+        android:layout_marginBottom="21dp"
         android:text="Inicio Sesión"
+        app:layout_constraintBottom_toTopOf="@+id/Registrarse"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="485dp" />
+        app:layout_constraintTop_toBottomOf="@+id/textInicio" />
 
     <Button
         android:id="@+id/Registrarse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="156dp"
+        android:layout_marginTop="21dp"
+        android:layout_marginEnd="157dp"
+        android:layout_marginBottom="72dp"
         android:text="Registrar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/IniciarSesion" />
+
+    <TextView
+        android:id="@+id/textInicio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="55dp"
+        android:layout_marginTop="476dp"
+        android:layout_marginEnd="56dp"
+        android:layout_marginBottom="30dp"
+        android:fontFamily="@font/leaguespartanlight"
+        android:maxWidth="300dp"
+        android:maxLines="4"
+        android:text="Iniciar sesión para continuar, en caso de no tener una cuenta por favor registrarse"
+        android:textAlignment="center"
+        android:textColor="@color/text"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/IniciarSesion"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
