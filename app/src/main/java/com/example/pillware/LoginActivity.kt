@@ -24,7 +24,6 @@ class LoginActivity : AppCompatActivity() {
         val editTextUsername = findViewById<EditText>(R.id.usuario)
         val editTextPassword = findViewById<EditText>(R.id.pass)
         val buttonLogin = findViewById<Button>(R.id.aceptar)
-        val buttonCancel = findViewById<Button>(R.id.cancel)
         val textViewTitulo = findViewById<TextView>(R.id.titulo)
 
         buttonLogin.setOnClickListener {
@@ -36,10 +35,6 @@ class LoginActivity : AppCompatActivity() {
             } else {
                 textViewTitulo.text = "Por favor, ingrese sus credenciales."
             }
-        }
-        buttonCancel.setOnClickListener {
-            editTextUsername.text.clear()
-            editTextPassword.text.clear()
         }
     }
 
