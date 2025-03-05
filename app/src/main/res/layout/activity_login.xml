@@ -88,20 +88,46 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/emailtit" />
 
-    <EditText
-        android:id="@+id/pass"
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:ems="10"
-        android:hint="Ingresa tu contraseña"
-        android:inputType="textPassword"
-        android:textSize="25sp"
-        app:layout_constraintEnd_toEndOf="@+id/usuario"
+        android:layout_marginTop="16dp"
+        android:text="Contraseña"
+        android:fontFamily="@font/leaguespartanmedium"
+        android:textColor="@color/text"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/usuario"
         app:layout_constraintTop_toBottomOf="@+id/usuario" />
 
-    <Button
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutPassword"
+        android:layout_width="0dp"
+        android:layout_height="48sp"
+    android:layout_marginTop="8dp"
+    app:layout_constraintEnd_toEndOf="@+id/usuario"
+    app:layout_constraintStart_toStartOf="@+id/usuario"
+    app:layout_constraintTop_toBottomOf="@+id/textView"
+    android:background="@drawable/containertext"
+    app:endIconMode="password_toggle"
+    android:textColorHint="@color/lightpurpletext">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/pass"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="6dp"
+            android:background="@null"
+            android:fontFamily="@font/leaguespartanregular"
+            android:gravity="center_vertical"
+            android:hint="*************"
+            android:inputType="textPassword"
+            android:textColor="@color/lightpurpletext"
+            android:textSize="20sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+<Button
         android:id="@+id/aceptar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -109,7 +135,7 @@
         android:layout_marginTop="24dp"
         android:text="Aceptar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pass" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPassword" />
 
     <Button
         android:id="@+id/cancel"
@@ -119,7 +145,7 @@
         android:layout_marginEnd="56dp"
         android:text="Cancelar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pass" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPassword" />
 
     <Button
         android:id="@+id/Registrarse"
@@ -130,6 +156,5 @@
         app:layout_constraintEnd_toStartOf="@+id/cancel"
         app:layout_constraintStart_toEndOf="@+id/aceptar"
         app:layout_constraintTop_toBottomOf="@+id/aceptar" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
