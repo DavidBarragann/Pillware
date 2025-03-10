@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.res.colorResource
@@ -23,6 +24,12 @@ class RegisterActivity : AppCompatActivity() {
             val intento = Intent(this, LoginActivity::class.java)
             startActivity(intento)
         }
+
+        //boton login
+        val buttonlogin=findViewById<TextView>(R.id.regLogin)
+        buttonlogin.setOnClickListener {
+            val intento = Intent(this, LoginActivity::class.java)
+            startActivity(intento)}
 
         // Campo de Fecha de Nacimiento
         val fechaNacimientoEditText = findViewById<EditText>(R.id.fechanac_edittext)
