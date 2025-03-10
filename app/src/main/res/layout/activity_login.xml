@@ -162,6 +162,17 @@
         app:layout_constraintTop_toBottomOf="@+id/forgotpass" />
 
     <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="¿No tiene cuenta?"
+        android:fontFamily="@font/leaguespartanlight"
+        android:textColor="@color/text"
+        app:layout_constraintStart_toStartOf="@+id/aceptar"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+
+    <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -172,6 +183,18 @@
         app:layout_constraintEnd_toEndOf="@+id/aceptar"
         app:layout_constraintStart_toStartOf="@+id/aceptar"
         app:layout_constraintTop_toBottomOf="@+id/aceptar" />
+
+    <TextView
+        android:id="@+id/registrarse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:fontFamily="@font/leaguespartanmedium"
+        android:text="Registrarse"
+        android:textColor="@color/azulSP"
+        app:layout_constraintEnd_toEndOf="@+id/aceptar"
+        app:layout_constraintStart_toEndOf="@id/textView2"
+        app:layout_constraintTop_toTopOf="@+id/textView2" />
 
     <ImageView
         android:id="@+id/imageView2"
