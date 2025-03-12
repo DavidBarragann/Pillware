@@ -17,6 +17,12 @@
             android:exported="false"
             android:label="@string/title_activity_bottommenu" />
         <activity
+            android:name=".NuevaContra"
+            android:exported="false" />
+        <activity
+            android:name=".ui.theme.NuevaContra"
+            android:exported="false" />
+        <activity
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
