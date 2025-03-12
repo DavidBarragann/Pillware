@@ -8,6 +8,23 @@
     android:background="@color/background">
 
 
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/menu"
+        app:labelVisibilityMode="unlabeled"
+        app:itemIconTint="@color/selector_bottom_nav_colors"
+        app:itemTextColor="@color/selector_bottom_nav_colors"
+        app:itemIconSize="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
+
     <ImageView
         android:id="@+id/imageView4"
         android:layout_width="70dp"
@@ -139,9 +156,115 @@
             app:srcCompat="@drawable/baseline_search_24"
             android:layout_gravity="center_vertical"
             app:tint="@color/azulSP" />
+
+
+
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+
     </LinearLayout>
+
+    <?xml version="1.0" encoding="utf-8"?>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/background"
+        android:padding="8dp">
+
+        <!-- Losartán -->
+
+        <!-- Metoprolol -->
+
+        <!-- Alendronato -->
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/lightpurple"
+        android:cornerRadius="12dp"
+        android:padding="12dp"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="418dp">
+
+        <TextView
+            android:id="@+id/tvAlendronato"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alendronato"
+            android:textColor="@color/lightpurpletext"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvAlendronato"
+            android:layout_marginTop="4dp"
+            android:text="8:00 am  |  8:00 pm"
+            android:textColor="@color/text"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/lightpurple"
+        android:cornerRadius="12dp"
+        android:padding="12dp"
+        tools:layout_editor_absoluteX="4dp"
+        tools:layout_editor_absoluteY="308dp">
+
+        <TextView
+            android:id="@+id/tvMetoprolol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Metoprolol"
+            android:textColor="@color/lightpurpletext"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvMetoprolol"
+            android:layout_marginTop="4dp"
+            android:text="10:00 am  |  4:00 pm"
+            android:textColor="@color/text"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/azulSP"
+        android:cornerRadius="12dp"
+        android:padding="12dp"
+        tools:layout_editor_absoluteX="14dp"
+        tools:layout_editor_absoluteY="214dp">
+
+        <TextView
+            android:id="@+id/tvLosartan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Losartán"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvLosartan"
+            android:layout_marginTop="4dp"
+            android:text="8:00 am  |  12:00 am  |  4:00 pm"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
