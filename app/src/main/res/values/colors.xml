@@ -7,10 +7,12 @@
     <color name="teal_700">#FF018786</color>
     <color name="white">#FFFFFFFF</color>
     <color name="text">#FF000000</color>
+    <color name="black">#000000</color>
     <color name="background">#FFFFFFFF</color>
     <color name="azulSP">#2260FF</color>
     <color name="lightpurple">#ECF1FF</color>
     <color name="lightpurpletext">#809CFF</color>
     <color name="lightblue">#CAD6FF</color>
+    <color name="azulprimario">#00278C</color>
 
 </resources>

@@ -9,8 +9,9 @@
 
     <Button
         android:id="@+id/IniciarSesion"
-        android:layout_width="207dp"
-        android:layout_height="47dp"
+        android:layout_width="208dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:background="@drawable/botones"
         android:backgroundTint="@color/azulSP"
         android:fontFamily="@font/leaguespartanmedium"
@@ -18,25 +19,28 @@
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="@color/white"
-        android:textSize="24sp"
 
-        tools:layout_editor_absoluteX="102dp"
-        tools:layout_editor_absoluteY="552dp" />
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInicio" />
 
     <Button
         android:id="@+id/Registrarse"
-        android:layout_width="207dp"
-        android:layout_height="45dp"
+        android:layout_width="208dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:background="@drawable/botones"
         android:backgroundTint="@color/lightblue"
         android:fontFamily="@font/leaguespartanmedium"
-        android:text="Registrarte"
+        android:text="Registrar"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="@color/azulSP"
         android:textSize="24sp"
-        tools:layout_editor_absoluteX="101dp"
-        tools:layout_editor_absoluteY="620dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/IniciarSesion" />
 
     <TextView
         android:id="@+id/textInicio"
@@ -49,15 +53,18 @@
         android:textAlignment="center"
         android:textColor="@color/text"
         android:textSize="16sp"
-        tools:layout_editor_absoluteX="100dp"
-        tools:layout_editor_absoluteY="479dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="558dp"
-        android:layout_height="623dp"
-        app:srcCompat="@drawable/ic_launcher_foreground"
-        tools:layout_editor_absoluteX="-74dp"
-        tools:layout_editor_absoluteY="-24dp" />
+        android:layout_width="500dp"
+        android:layout_height="500dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_launcher_foreground" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

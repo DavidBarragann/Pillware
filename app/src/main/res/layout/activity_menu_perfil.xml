@@ -20,6 +20,18 @@
         app:tint="@color/azulSP"
         tools:ignore="InvalidId" />
 
+    <ImageView
+        android:id="@+id/profile_image"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/circle_shape"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/perfiltxt"
+        tools:srcCompat="@drawable/baseline_person_24" />
+
     <TextView
         android:id="@+id/perfiltxt"
         android:layout_width="wrap_content"
@@ -34,16 +46,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/profile_image"
-        android:layout_width="106dp"
-        android:layout_height="106dp"
-        android:background="@drawable/circle_shape"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_launcher_foreground"
-        tools:layout_editor_absoluteX="155dp"
-        tools:layout_editor_absoluteY="65dp"
-        tools:ignore="MissingConstraints" />
+
 
     <TextView
         android:id="@+id/nombretit"
@@ -88,7 +91,7 @@
         app:layout_constraintStart_toStartOf="@+id/usuario"
         app:layout_constraintTop_toBottomOf="@+id/usuario" />
 
-    <com.google.android.material.textfield.TextInputLayout
+    <EditText
         android:id="@+id/textInputLayoutPassword"
         android:layout_width="300dp"
         android:layout_height="48sp"
@@ -96,7 +99,7 @@
         android:background="@drawable/containertext"
         android:ems="10"
         android:fontFamily="@font/leaguespartanregular"
-        android:hint="21"
+        android:hint="74"
         android:paddingLeft="16dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
@@ -104,7 +107,7 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="@+id/usuario"
         app:layout_constraintStart_toStartOf="@+id/usuario"
-        app:layout_constraintTop_toBottomOf="@+id/textView">
+        app:layout_constraintTop_toBottomOf="@+id/textView"/>
 
 
     <TextView
@@ -180,7 +183,7 @@
         app:layout_constraintTop_toBottomOf="@+id/teledittext" />
 
     <EditText
-        android:id="@+id/fechanac_edittext"
+        android:id="@+id/FamiliarEdit"
         android:layout_width="300sp"
         android:layout_height="48sp"
         android:layout_marginTop="8dp"
@@ -196,5 +199,19 @@
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/fechanac_titulo"
         app:layout_constraintTop_toBottomOf="@+id/fechanac_titulo" />
-
+    <Button
+        android:id="@+id/aceptar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/botones"
+        android:backgroundTint="@color/azulSP"
+        android:fontFamily="@font/leaguespartanmedium"
+        android:text="Actualizar perfil"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/FamiliarEdit" />
 </androidx.constraintlayout.widget.ConstraintLayout>
