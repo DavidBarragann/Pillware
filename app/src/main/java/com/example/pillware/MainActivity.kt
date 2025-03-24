@@ -1,40 +1,52 @@
 package com.example.pillware
-
 import android.os.Bundle
-import android.widget.TextView
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ListView
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
-import com.example.pillware.ui.theme.PillwareTheme
+import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.firestore.FirebaseFirestore
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+    private lateinit var db: FirebaseFirestore
+    private lateinit var adapter: ArrayAdapter<String>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.fragment_home)
-    }
-}
+        setContentView(R.layout.activity_main)//CAMBIARESTO
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+        //código empieza aquí.
+        db = FirebaseFirestore.getInstance()
+        val input = findViewById<EditText>(R.id.notaInput)
+        val btn = findViewById<Button>(R.id.btnGuardar)
+        val listView = findViewById<ListView>(R.id.listaNotas)
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mutableListOf())
+        listView.adapter = adapter
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PillwareTheme {
-        Greeting("Android")
+        btn.setOnClickListener {
+            val texto = input.text.toString()
+            if (texto.isNotEmpty()) {
+                val nota = hashMapOf("texto" to texto)
+                db.collection("notas").add(nota)
+                input.text.clear()
+            }
+        }
+
+        db.collection("notas").addSnapshotListener { snapshots, _ ->
+            val lista = mutableListOf<String>()
+            snapshots?.forEach {
+                lista.add(it.getString("texto") ?: "")
+            }
+            adapter.clear()
+            adapter.addAll(lista)
+        }
     }
 }
