@@ -19,10 +19,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        val textV=findViewById<TextView>(R.id.mensaje)
-        val texto:String=intent.extras?.getString("EXTRA_TEXTO").orEmpty()
-        textV.text="Bienvenido $texto"
+        setContentView(R.layout.fragment_home)
     }
 }
 

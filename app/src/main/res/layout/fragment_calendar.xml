@@ -2,36 +2,35 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+    tools:context="ui.dashboard.DashboardFragment"
     android:background="@color/background">
 
     <ImageView
-android:id="@+id/imageView"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:layout_marginStart="24dp"
-android:layout_marginTop="32dp"
-app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintTop_toTopOf="parent"
-app:srcCompat="@drawable/baseline_arrow_back_ios_new_24"
-app:tint="@color/azulSP" />
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/baseline_arrow_back_ios_new_24"
+        app:tint="@color/azulSP" />
 
-<TextView
-android:id="@+id/titulo"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:layout_marginTop="24dp"
-android:fontFamily="@font/leaguespartansemibold"
-android:text="Farmacias Cercanas"
-android:textColor="@color/azulSP"
-android:textSize="24sp"
-app:layout_constraintEnd_toEndOf="parent"
-app:layout_constraintHorizontal_bias="0.498"
-app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/titulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/leaguespartansemibold"
+        android:text="Farmacias Cercanas"
+        android:textColor="@color/azulSP"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutPasswordd"
@@ -40,10 +39,10 @@ app:layout_constraintTop_toTopOf="parent" />
         android:background="@drawable/containertext"
         android:paddingBottom="8dp"
         android:textColorHint="@color/lightpurpletext"
-        app:endIconMode=""
         app:endIconTint="@color/text"
-        tools:layout_editor_absoluteX="55dp"
-        tools:layout_editor_absoluteY="85dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titulo">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/pas"
@@ -63,9 +62,11 @@ app:layout_constraintTop_toTopOf="parent" />
         android:id="@+id/imageView8"
         android:layout_width="351dp"
         android:layout_height="499dp"
-        app:srcCompat="@mipmap/ic_map"
-        tools:layout_editor_absoluteX="30dp"
-        tools:layout_editor_absoluteY="126dp" />
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPasswordd"
+        app:srcCompat="@mipmap/ic_map" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

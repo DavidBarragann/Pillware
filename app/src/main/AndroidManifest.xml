@@ -6,9 +6,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_launcher_foreground"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_launcher_foreground"
         android:supportsRtl="true"
         android:theme="@style/Theme.Pillware"
         tools:targetApi="31">
@@ -18,10 +18,8 @@
             android:label="@string/title_activity_bottommenu" />
         <activity
             android:name=".NuevaContra"
-            android:exported="false" />
-        <activity
-            android:name=".ui.theme.NuevaContra"
-            android:exported="false" />
+            android:exported="true" >
+        </activity>
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
@@ -30,7 +28,8 @@
             android:exported="false" />
         <activity
             android:name=".Primera"
-            android:exported="false" />
+            android:exported="true">
+        </activity>
         <activity
             android:name=".LoginActivity"
             android:exported="true"
