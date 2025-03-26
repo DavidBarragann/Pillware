@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Icono de verificación -->
+        <ImageView
+            android:id="@+id/check_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/baseline_check_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/verdecheck" />
+
+        <!-- Nombre del medicamento -->
+        <TextView
+            android:id="@+id/nombre_medicamento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre Medicamento"
+            android:textSize="20sp"
+            android:textColor="@color/azulSP"
+            android:fontFamily="@font/leaguespartanbold"
+            app:layout_constraintStart_toEndOf="@id/check_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/check_icon"
+            android:layout_marginStart="8dp" />
+
+        <!-- Horarios -->
+        <TextView
+            android:id="@+id/horario_medicamento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="8:00 am - 12:00 pm"
+            android:textSize="16sp"
+            android:textColor="@color/text"
+            android:fontFamily="@font/leaguespartanlight"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nombre_medicamento"
+            android:layout_marginTop="8dp" />
+
+        <!-- Botón 1 cápsula -->
+        <TextView
+            android:id="@+id/button_capsula"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 cápsula"
+            android:textSize="14sp"
+            android:background="@drawable/botones"
+            android:textColor="@color/azulSP"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/horario_medicamento"
+            android:layout_marginTop="16dp" />
+
+        <!-- Botón Compartir -->
+        <Button
+            android:id="@+id/button_compartir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Compartir"
+            android:textSize="14sp"
+            android:background="@drawable/botones"
+            android:textColor="@color/azulSP"
+            app:layout_constraintStart_toEndOf="@id/button_capsula"
+            app:layout_constraintTop_toBottomOf="@id/horario_medicamento"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp" />
+
+        <!-- Botón Información -->
+        <ImageButton
+            android:id="@+id/button_info"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/baseline_question_mark_24"
+            android:background="?attr/selectableItemBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="Información" />
+
+        <!-- Botón Eliminar -->
+        <ImageButton
+            android:id="@+id/button_eliminar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/baseline_do_disturb_on_24"
+            android:background="?attr/selectableItemBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/button_info"
+            android:layout_marginTop="8dp"
+            android:contentDescription="Eliminar" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

@@ -1,52 +1,45 @@
 package com.example.pillware
+
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ListView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.google.firebase.firestore.FirebaseFirestore
+import androidx.fragment.app.Fragment
+import com.example.pillware.databinding.ActivityMainBinding
+import com.example.pillware.ui.home.HomeFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var db: FirebaseFirestore
-    private lateinit var adapter: ArrayAdapter<String>
+
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)//CAMBIARESTO
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        // Inicializar el binding
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // Establecer el HomeFragment como el fragmento por defecto
+        if (savedInstanceState == null) {
+            loadFragment(HomeFragment())
         }
-        //código empieza aquí.
-        db = FirebaseFirestore.getInstance()
-        val input = findViewById<EditText>(R.id.notaInput)
-        val btn = findViewById<Button>(R.id.btnGuardar)
-        val listView = findViewById<ListView>(R.id.listaNotas)
 
-        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mutableListOf())
-        listView.adapter = adapter
-
-        btn.setOnClickListener {
-            val texto = input.text.toString()
-            if (texto.isNotEmpty()) {
-                val nota = hashMapOf("texto" to texto)
-                db.collection("notas").add(nota)
-                input.text.clear()
+        // Configurar el BottomNavigationView para manejar las selecciones de menú
+        binding.navView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_home -> {
+                    loadFragment(HomeFragment())
+                    return@setOnNavigationItemSelectedListener true
+                }
+                // Añade más casos si tienes más opciones en el menú
             }
+            false
         }
+    }
 
-        db.collection("notas").addSnapshotListener { snapshots, _ ->
-            val lista = mutableListOf<String>()
-            snapshots?.forEach {
-                lista.add(it.getString("texto") ?: "")
-            }
-            adapter.clear()
-            adapter.addAll(lista)
-        }
+    // Función para cargar un fragmento en el contenedor principal
+    private fun loadFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 }
