@@ -96,10 +96,6 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
                             )
                         )
 
-                        googleMap.addMarker(
-                            MarkerOptions().position(currentLatLng).title("Tu ubicación")
-                        )
-
                         findNearbyPharmacies(currentLatLng)
                     } else {
                         Log.d(TAG, "Current location is null. Using defaults.")
