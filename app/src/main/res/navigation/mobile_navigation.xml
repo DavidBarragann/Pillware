@@ -12,8 +12,8 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.pillware.ui.dashboard.DashboardFragment"
+        android:id="@+id/navigation_location"
+        android:name="com.example.pillware.ui.locations.LocationsFragment"
         android:label="@string/title_locations"
         tools:layout="@layout/fragment_locations" />
 

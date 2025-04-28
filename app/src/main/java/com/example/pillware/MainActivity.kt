@@ -3,8 +3,12 @@ package com.example.pillware
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.pillware.R
 import com.example.pillware.databinding.ActivityMainBinding
 import com.example.pillware.ui.home.HomeFragment
+import com.example.pillware.ui.locations.LocationsFragment
+import com.example.pillware.ui.notifications.NotificationsFragment
+import com.example.pillware.ui.calendar.CalendarFragment // Import CalendarFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -30,7 +34,19 @@ class MainActivity : AppCompatActivity() {
                     loadFragment(HomeFragment())
                     return@setOnNavigationItemSelectedListener true
                 }
-                // Añade más casos si tienes más opciones en el menú
+                R.id.navigation_location -> {
+                    loadFragment(LocationsFragment())
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.navigation_notifications -> {
+                    // Assuming "title_calendar" in your strings.xml corresponds to the notifications fragment
+                    loadFragment(NotificationsFragment())
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.navigation_calendar -> {
+                    loadFragment(CalendarFragment()) // Load CalendarFragment
+                    return@setOnNavigationItemSelectedListener true
+                }
             }
             false
         }

@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
 
 android {
@@ -62,6 +63,11 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.firebase.firestore)
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
+    implementation("com.google.android.libraries.places:places:3.4.0") // Consolidated Places dependency
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation(libs.firebase.storage.ktx) // Use the latest version available
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

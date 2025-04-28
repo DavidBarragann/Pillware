@@ -14,4 +14,5 @@
     <string name="title_locations">Ubicaciones</string>
     <string name="title_calendar">Calendario</string>
     <string name="title_doctors">Médicos</string>
+    <string name="google_maps_key">AIzaSyCVsRlR5VTqqjgKXxla8Hi7qODLSp5JFbo</string>
 </resources>
