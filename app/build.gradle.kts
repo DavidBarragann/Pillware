@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
+    implementation("com.google.android.material:material:1.11.0")
     implementation("com.google.android.libraries.places:places:3.4.0") // Consolidated Places dependency
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation(libs.firebase.storage.ktx) // Use the latest version available
@@ -75,6 +76,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation ("com.github.bumptech.glide:glide:4.16.0") // Add this line (check for the latest version)
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
 
 
     //Google auth

@@ -10,10 +10,12 @@
     <color name="black">#000000</color>
     <color name="background">#FFFFFFFF</color>
     <color name="azulSP">#2260FF</color>
+    <color name="transparent">#00000000</color>
     <color name="lightpurple">#ECF1FF</color>
     <color name="lightpurpletext">#809CFF</color>
     <color name="lightblue">#CAD6FF</color>
     <color name="azulprimario">#00278C</color>
     <color name="verdecheck">#95D277</color>
+    <color name="purppl2">#CDD8FF</color>
 
 </resources>
