@@ -6,16 +6,15 @@
     android:layout_height="wrap_content"
     android:background="@drawable/containertext"
     android:backgroundTint="@color/white"
-    android:padding="16dp">
+    android:padding="8dp">
 
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/pharmacy" />
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

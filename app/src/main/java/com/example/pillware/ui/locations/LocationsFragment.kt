@@ -5,16 +5,26 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import java.util.Locale
+import java.util.Calendar
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.example.pillware.R
+import com.example.pillware.databinding.FragmentLocationsBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -25,6 +35,8 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.firebase.firestore.FirebaseFirestore
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -33,21 +45,36 @@ import okhttp3.Response
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import android.graphics.drawable.Drawable
+import android.content.Intent
+import android.net.Uri
+import com.google.android.gms.maps.model.Marker
+
+import com.google.android.libraries.places.api.model.OpeningHours
 
 class LocationsFragment : Fragment(), OnMapReadyCallback {
 
+    private var _binding: FragmentLocationsBinding? = null
+    private val binding get() = _binding!!
     private lateinit var googleMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var lastKnownLocation: Location? = null
     private val DEFAULT_ZOOM = 15f
     private val LOCATION_PERMISSION_REQUEST_CODE = 123
+    private val firestore = FirebaseFirestore.getInstance()
+    private val pharmacyLogosCache = mutableMapOf<String, String?>() // Cache para los logos
+    private var bottomSheetBehavior: BottomSheetBehavior<View>? = null
+    private lateinit var bottomSheet: View // Declarar la vista del bottom sheet
+    private var selectedMarker: Marker? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_locations, container, false)
+    ): View {
+        _binding = FragmentLocationsBinding.inflate(inflater, container, false)
+        bottomSheet = binding.bottomSheet // Inicializar la vista del bottom sheet aquí
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -56,24 +83,10 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
         mapFragment?.getMapAsync(this)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-    }
 
-    override fun onMapReady(map: GoogleMap) {
-        this.googleMap = map
-
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            googleMap.isMyLocationEnabled = true
-            getDeviceLocationAndNearbyPharmacies()
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
+            peekHeight = 1
+            state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }
 
@@ -95,7 +108,6 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
                                 DEFAULT_ZOOM
                             )
                         )
-
                         findNearbyPharmacies(currentLatLng)
                     } else {
                         Log.d(TAG, "Current location is null. Using defaults.")
@@ -155,9 +167,12 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
 
                         for (i in 0 until results.length()) {
                             val place = results.getJSONObject(i)
-                            val name = place.getString("name")
+                            val pharmacyNameFromMaps = place.getString("name").toLowerCase()
 
-                            if (name.contains("veterinaria", ignoreCase = true)) {
+                            if (pharmacyNameFromMaps.contains("veterinaria") || pharmacyNameFromMaps.lowercase()
+                                    .contains("acupuntura") || pharmacyNameFromMaps.lowercase()
+                                    .contains("dermatológica")
+                            ) {
                                 continue
                             }
 
@@ -165,16 +180,22 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
                             val locationObj = geometry.getJSONObject("location")
                             val lat = locationObj.getDouble("lat")
                             val lng = locationObj.getDouble("lng")
-
                             val placeLatLng = LatLng(lat, lng)
+                            val placeId = place.getString("place_id")
 
-                            requireActivity().runOnUiThread {
-                                googleMap.addMarker(
-                                    MarkerOptions()
-                                        .position(placeLatLng)
-                                        .title(name)
-                                        .icon(getCustomMarkerBitmap())
-                                )
+                            // Buscar el logo en Firestore
+                            findPharmacyLogo(pharmacyNameFromMaps) { logoUrl ->
+                                getCustomMarkerBitmap(logoUrl) { bitmapDescriptor -> // Recibimos el BitmapDescriptor aquí
+                                    requireActivity().runOnUiThread {
+                                        val marker= googleMap.addMarker(
+                                            MarkerOptions()
+                                                .position(placeLatLng)
+                                                .title(place.getString("name"))
+                                                .icon(bitmapDescriptor) // Usamos el BitmapDescriptor recibido
+                                        )
+                                        marker?.tag=placeId
+                                    }
+                                }
                             }
                         }
                     } catch (e: JSONException) {
@@ -182,30 +203,250 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
                     }
                 }
             }
-
         })
     }
 
-    private fun getCustomMarkerBitmap(): BitmapDescriptor {
-        val customMarkerView = LayoutInflater.from(requireContext()).inflate(R.layout.pharmacy_marker, null)
+    private fun fetchPlaceDetails(placeId: String, callback: (Double?, String?) -> Unit) {
+        val url = "https://maps.googleapis.com/maps/api/place/details/json?" +
+                "place_id=${placeId}" +
+                "&fields=rating,opening_hours" +
+                "&key=${getString(R.string.google_maps_key)}"
 
-        customMarkerView.measure(
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url(url)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e(TAG, "Places Details API failed for ID: $placeId, error: ${e.message}")
+                callback(null, null)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                response.body?.let { responseBody ->
+                    val responseData = responseBody.string()
+                    try {
+                        val jsonObject = JSONObject(responseData)
+                        if (jsonObject.getString("status") == "OK") {
+                            val result = jsonObject.getJSONObject("result")
+                            val pharmacyName = result.optString("name")
+                            val rating = result.optDouble("rating").takeIf { it != 0.0 }
+                            val openingHoursObject = result.optJSONObject("opening_hours")
+                            var todayOpeningHours: String? = null
+
+                            if (openingHoursObject != null && openingHoursObject.has("weekday_text")) {
+                                val weekdayTextArray = openingHoursObject.getJSONArray("weekday_text")
+                                val calendar = Calendar.getInstance()
+                                val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+
+                                // El array weekday_text comienza con Domingo en la posición 0 (según la documentación)
+                                val index = when (dayOfWeek) {
+                                    Calendar.SUNDAY -> 0
+                                    Calendar.MONDAY -> 1
+                                    Calendar.TUESDAY -> 2
+                                    Calendar.WEDNESDAY -> 3
+                                    Calendar.THURSDAY -> 4
+                                    Calendar.FRIDAY -> 5
+                                    Calendar.SATURDAY -> 6
+                                    else -> -1
+                                }
+
+                                if (index in 0 until weekdayTextArray.length()) {
+                                    todayOpeningHours = weekdayTextArray.getString(index)
+                                    // Extraer solo el horario (ej: "8:00 AM – 9:00 PM")
+                                    val parts = todayOpeningHours.split(": ")
+                                    if (parts.size > 1) {
+                                        todayOpeningHours = parts[1]
+                                    }
+                                }
+                            }
+
+                            // Ejecutar la actualización de la UI en el hilo principal
+                            requireActivity().runOnUiThread {
+                                Log.d(TAG, "Nombre de farmacia obtenido: $pharmacyName")
+                                callback(rating, todayOpeningHours)
+                                onSelectedPharmacy(pharmacyName, rating, todayOpeningHours)
+                            }
+                        } else {
+                            Log.w(TAG, "Places Details API status not OK for ID: $placeId, status: ${jsonObject.getString("status")}")
+                            callback(null, null)
+                        }
+                    } catch (e: JSONException) {
+                        Log.e(TAG, "Error parsing Places Details API response for ID: $placeId, error: ${e.message}")
+                        callback(null, null)
+                    }
+                }
+            }
+        })
+    }
+    private fun findPharmacyLogo(pharmacyName: String, callback: (String?) -> Unit) {
+        // Verificar primero en la caché
+        pharmacyLogosCache[pharmacyName]?.let {
+            callback(it)
+            return
+        }
+
+        firestore.collection("Farmacia")
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                var foundLogoUrl: String? = null
+                for (document in querySnapshot) {
+                    val nombreEnDb = document.getString("nombre")?.lowercase(Locale.getDefault())
+                    val logoUrl = document.getString("logo")
+
+                    if (!nombreEnDb.isNullOrEmpty() && pharmacyName.contains(nombreEnDb)) {
+                        foundLogoUrl = logoUrl
+                        break // Encontramos una coincidencia, podemos detener la búsqueda
+                    }
+                }
+                pharmacyLogosCache[pharmacyName] = foundLogoUrl // Guardar en caché
+                callback(foundLogoUrl)
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error al buscar logo de farmacia en Firestore: ", exception)
+                pharmacyLogosCache[pharmacyName] = null // Guardar null en caché en caso de error
+                callback(null)
+            }
+    }
+
+    private fun getCustomMarkerBitmap(logoUrl: String?, callback: (BitmapDescriptor) -> Unit) {
+        val customMarkerView = LayoutInflater.from(requireContext()).inflate(R.layout.pharmacy_marker, null)
+        val pharmacyLogoImageView = customMarkerView.findViewById<ImageView>(R.id.logo)
+
+        if (!logoUrl.isNullOrEmpty()) {
+            Glide.with(requireContext())
+                .load(logoUrl)
+                .addListener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        Log.e(TAG, "Glide load failed for URL: $logoUrl", e)
+                        // Llamar al callback con un marcador por defecto en caso de fallo
+                        callback(getDefaultMarkerBitmap())
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        model: Any,
+                        target: Target<Drawable>,
+                        dataSource: DataSource,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        // Dibujar el Drawable en la vista y obtener el BitmapDescriptor
+                        pharmacyLogoImageView.setImageDrawable(resource)
+                        val bitmapDescriptor = createBitmapDescriptorFromView(customMarkerView)
+                        callback(bitmapDescriptor)
+                        return false
+                    }
+                })
+                .into(pharmacyLogoImageView)
+        } else {
+            // Llamar al callback inmediatamente con el marcador por defecto
+            callback(getDefaultMarkerBitmap())
+        }
+    }
+
+    private fun createBitmapDescriptorFromView(view: View): BitmapDescriptor {
+        view.measure(
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         )
-        customMarkerView.layout(0, 0, customMarkerView.measuredWidth, customMarkerView.measuredHeight)
-
+        view.layout(0, 0, view.measuredWidth, view.measuredHeight)
         val bitmap = Bitmap.createBitmap(
-            customMarkerView.measuredWidth,
-            customMarkerView.measuredHeight,
+            view.measuredWidth,
+            view.measuredHeight,
             Bitmap.Config.ARGB_8888
         )
         val canvas = Canvas(bitmap)
-        customMarkerView.draw(canvas)
-
+        view.draw(canvas)
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
+    private fun getDefaultMarkerBitmap(): BitmapDescriptor {
+        val customMarkerView = LayoutInflater.from(requireContext()).inflate(R.layout.pharmacy_marker, null)
+        val pharmacyLogoImageView = customMarkerView.findViewById<ImageView>(R.id.logo)
+        pharmacyLogoImageView.setImageResource(R.drawable.pharmacy)
+        return createBitmapDescriptorFromView(customMarkerView)
+    }
+
+    override fun onMapReady(map: GoogleMap) {
+        this.googleMap = map
+
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            googleMap.isMyLocationEnabled = true
+            getDeviceLocationAndNearbyPharmacies()
+        } else {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
+        // Aquí se establece el listener para los clicks en los marcadores
+        googleMap.setOnMarkerClickListener { marker ->
+            val pharmacyName = marker.title
+            Log.d(TAG, "Se hizo click en el marcador: ${pharmacyName}")
+            val placeId = marker.tag as? String
+            selectedMarker = marker // Guarda el marcador seleccionado
+            if (!placeId.isNullOrEmpty()) {
+                fetchPlaceDetails(placeId) { rating, openingHours ->
+                    // La actualización de la UI (llamada a onSelectedPharmacy) ya está dentro de runOnUiThread
+                }
+            } else {
+                requireActivity().runOnUiThread { // Asegurar que onSelectedPharmacy se llama en el hilo principal
+                    onSelectedPharmacy(pharmacyName, null, null) // Si no hay placeId, mostrar solo el nombre
+                }
+            }
+            true
+        }
+    }
+
+    private fun onSelectedPharmacy(pharmacyName: String?, rating: Double?, openingHours: String?) {
+        BottomSheetBehavior.from(bottomSheet).apply {
+            this.state = BottomSheetBehavior.STATE_EXPANDED
+        }
+        val nombreFarmaciaTextView = binding.bottomSheet.findViewById<TextView>(R.id.nombre_far)
+        val ratingTextView = binding.bottomSheet.findViewById<TextView>(R.id.rating)
+        val horarioTextView = binding.bottomSheet.findViewById<TextView>(R.id.horario)
+
+        nombreFarmaciaTextView?.text = pharmacyName.takeIf { !it.isNullOrBlank() } ?: selectedMarker?.title ?: "Nombre no disponible"
+        ratingTextView?.text = rating?.let { String.format("%.1f", it) } ?: "Sin rating"
+        horarioTextView?.text = openingHours ?: "Horario no disponible"
+
+        binding.bottomSheet.findViewById<TextView>(R.id.como_llegar)?.setOnClickListener {
+            selectedMarker?.position?.let { latLng ->
+                openGoogleMapsDirections(lastKnownLocation?.latitude, lastKnownLocation?.longitude, latLng.latitude, latLng.longitude)
+            } ?: run {
+                Log.w(TAG, "No se pudo obtener la ubicación de la farmacia para la ruta.")
+            }
+        }
+    }
+
+    private fun openGoogleMapsDirections(startLatitude: Double?, startLongitude: Double?, endLatitude: Double, endLongitude: Double) {
+        if (startLatitude != null && startLongitude != null) {
+            val gmmIntentUri = Uri.parse("google.navigation:q=$endLatitude,$endLongitude&dirflg=d") // 'd' para ruta en coche
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+            mapIntent.setPackage("com.google.android.apps.maps")
+            startActivity(mapIntent)
+        } else {
+            // Si no se tiene la ubicación actual, se abre Google Maps solo mostrando el destino
+            val gmmIntentUri = Uri.parse("geo:$endLatitude,$endLongitude?q=$endLatitude,$endLongitude")
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+            mapIntent.setPackage("com.google.android.apps.maps")
+            startActivity(mapIntent)
+            Log.w(TAG, "No se pudo obtener la ubicación actual para iniciar la navegación. Mostrando solo el destino.")
+            // Opcional: Mostrar un mensaje al usuario
+        }
+    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -240,6 +481,11 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
 
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {
