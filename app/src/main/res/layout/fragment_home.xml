@@ -126,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@null"
-                    android:hint="Buscar medicamento"
+                    android:hint=""
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:textColor="@color/black"

@@ -12,7 +12,14 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import java.util.Calendar
 
 class RegisterActivity : AppCompatActivity() {
@@ -24,6 +31,8 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var editTextConfirmPassword: EditText
     private lateinit var editTextFechaNacimiento: EditText
     private lateinit var buttonRegister: Button
+    private lateinit var googleSignInClient: GoogleSignInClient
+    private val RC_SIGN_IN = 9001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +40,13 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(R.layout.activity_register)
 
         auth = FirebaseAuth.getInstance()
+
+        // Configure Google Sign In
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.client_web)) // Make sure this string resource exists
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         // Initialize UI elements
         val buttonBack = findViewById<ImageView>(R.id.backarrowreg)
@@ -40,6 +56,7 @@ class RegisterActivity : AppCompatActivity() {
         editTextPassword = findViewById(R.id.pass)
         editTextFechaNacimiento = findViewById(R.id.fechanac_edittext)
         buttonRegister = findViewById(R.id.Registrar)
+        val googleSignInButton = findViewById<ImageView>(R.id.googleSignIn)
 
         // Botón de retroceso
         buttonBack.setOnClickListener {
@@ -65,6 +82,11 @@ class RegisterActivity : AppCompatActivity() {
         // Botón de Registrar
         buttonRegister.setOnClickListener {
             signUpWithEmailAndPassword()
+        }
+
+        // Botón de Google Sign-In
+        googleSignInButton.setOnClickListener {
+            signInWithGoogle()
         }
     }
 
@@ -139,6 +161,46 @@ class RegisterActivity : AppCompatActivity() {
                     // If sign in fails, display a message to the user.
                     Log.w("RegisterActivity", "createUserWithEmail:failure", task.exception)
                     Toast.makeText(baseContext, "Registro fallido. Inténtelo de nuevo.", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
+    private fun signInWithGoogle() {
+        val signInIntent = googleSignInClient.signInIntent
+        startActivityForResult(signInIntent, RC_SIGN_IN)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == RC_SIGN_IN) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                val account = task.getResult(ApiException::class.java)
+                firebaseAuthWithGoogle(account?.idToken)
+            } catch (e: ApiException) {
+                // Google Sign In failed, update UI appropriately
+                Log.w("RegisterActivity", "Google sign in failed", e)
+                Toast.makeText(baseContext, "Error al registrarse con Google.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun firebaseAuthWithGoogle(idToken: String?) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    val user = auth.currentUser
+                    Log.d("RegisterActivity", "firebaseAuthWithGoogle:success")
+                    navigateToMainActivity(user?.email)
+                    finish()
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w("RegisterActivity", "firebaseAuthWithGoogle:failure", task.exception)
+                    Toast.makeText(baseContext, "Registro fallido con Google.", Toast.LENGTH_SHORT).show()
                 }
             }
     }

@@ -78,7 +78,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutPassword"
-        android:layout_width="300dp"
+        android:layout_width="300sp"
         android:layout_height="48sp"
         android:layout_marginTop="8dp"
         android:background="@drawable/containertext"
@@ -86,8 +86,8 @@
         android:textColorHint="@color/lightpurpletext"
         app:endIconMode="password_toggle"
         app:endIconTint="@color/text"
-        app:layout_constraintEnd_toEndOf="@+id/usuario"
-        app:layout_constraintStart_toStartOf="@+id/usuario"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -239,7 +239,7 @@
         app:layout_constraintTop_toBottomOf="@+id/Registrar" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/googleSignIn"
         android:layout_width="40sp"
         android:layout_height="40dp"
         android:layout_marginStart="8dp"
@@ -252,7 +252,7 @@
         app:tint="@color/azulSP" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/facebookSignIn"
         android:layout_width="40sp"
         android:layout_height="40dp"
         android:layout_marginTop="8dp"
@@ -274,7 +274,7 @@
         android:textColor="@color/text"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="@+id/terms_and_conditions"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2"/>
+        app:layout_constraintTop_toBottomOf="@+id/googleSignIn"/>
 
     <TextView
         android:id="@+id/regLogin"
@@ -288,6 +288,6 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="@+id/terms_and_conditions"
         app:layout_constraintStart_toEndOf="@id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+        app:layout_constraintTop_toBottomOf="@+id/facebookSignIn" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
