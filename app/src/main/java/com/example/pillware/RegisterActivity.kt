@@ -20,11 +20,13 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore // Import Firestore
 import java.util.Calendar
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var firestore: FirebaseFirestore // Declare Firestore instance
     private lateinit var editTextNombre: EditText
     private lateinit var editTextEmail: EditText
     private lateinit var editTextPassword: EditText
@@ -40,6 +42,7 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(R.layout.activity_register)
 
         auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance() // Initialize Firestore
 
         // Configure Google Sign In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -54,6 +57,7 @@ class RegisterActivity : AppCompatActivity() {
         editTextNombre = findViewById(R.id.usuario)
         editTextEmail = findViewById(R.id.emailedittext)
         editTextPassword = findViewById(R.id.pass)
+        editTextConfirmPassword = findViewById(R.id.confirm_pass) // Assuming you have this in your layout
         editTextFechaNacimiento = findViewById(R.id.fechanac_edittext)
         buttonRegister = findViewById(R.id.Registrar)
         val googleSignInButton = findViewById<ImageView>(R.id.googleSignIn)
@@ -109,7 +113,7 @@ class RegisterActivity : AppCompatActivity() {
         val email = editTextEmail.text.toString().trim()
         val password = editTextPassword.text.toString().trim()
         val confirmPassword = editTextConfirmPassword.text.toString().trim()
-        val fechaNacimiento = editTextFechaNacimiento.text.toString().trim() // You might want to parse this into a Date object later
+        val fechaNacimiento = editTextFechaNacimiento.text.toString().trim()
 
         if (name.isEmpty()) {
             editTextNombre.error = "El nombre es requerido"
@@ -135,30 +139,24 @@ class RegisterActivity : AppCompatActivity() {
             return
         }
 
-        if (confirmPassword.isEmpty()) {
-            editTextConfirmPassword.error = "Confirme la contraseña"
-            editTextConfirmPassword.requestFocus()
-            return
-        }
-
         if (password != confirmPassword) {
             editTextConfirmPassword.error = "Las contraseñas no coinciden"
             editTextConfirmPassword.requestFocus()
             return
         }
 
-        // Create user with email and password
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
                     Log.d("RegisterActivity", "createUserWithEmail:success")
                     val user = auth.currentUser
-                    // You might want to save the user's name and fechaNacimiento to Firebase as well
+                    user?.let {
+                        // Save user data to Firestore
+                        saveUserDataToFirestore(it.uid, name, email, fechaNacimiento)
+                    }
                     navigateToMainActivity(user?.email)
-                    finish() // Close the register activity
+                    finish()
                 } else {
-                    // If sign in fails, display a message to the user.
                     Log.w("RegisterActivity", "createUserWithEmail:failure", task.exception)
                     Toast.makeText(baseContext, "Registro fallido. Inténtelo de nuevo.", Toast.LENGTH_SHORT).show()
                 }
@@ -176,11 +174,9 @@ class RegisterActivity : AppCompatActivity() {
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
-                // Google Sign In was successful, authenticate with Firebase
                 val account = task.getResult(ApiException::class.java)
                 firebaseAuthWithGoogle(account?.idToken)
             } catch (e: ApiException) {
-                // Google Sign In failed, update UI appropriately
                 Log.w("RegisterActivity", "Google sign in failed", e)
                 Toast.makeText(baseContext, "Error al registrarse con Google.", Toast.LENGTH_SHORT).show()
             }
@@ -192,16 +188,59 @@ class RegisterActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
                     val user = auth.currentUser
                     Log.d("RegisterActivity", "firebaseAuthWithGoogle:success")
+                    user?.let {
+                        // Save Google user email to Firestore
+                        saveGoogleUserEmailToFirestore(it.uid, it.email)
+                    }
                     navigateToMainActivity(user?.email)
                     finish()
                 } else {
-                    // If sign in fails, display a message to the user.
                     Log.w("RegisterActivity", "firebaseAuthWithGoogle:failure", task.exception)
                     Toast.makeText(baseContext, "Registro fallido con Google.", Toast.LENGTH_SHORT).show()
                 }
+            }
+    }
+
+    // --- Firestore Functions ---
+    private fun saveUserDataToFirestore(uid: String, name: String, email: String, fechaNacimiento: String) {
+        val userProfile = hashMapOf(
+            "nombre" to name,
+            "email" to email,
+            "fecha_nacimiento" to fechaNacimiento,
+            "otros_datos_completados" to false // Flag to indicate if other data needs to be filled
+        )
+
+        firestore.collection("Perfil")
+            .document(uid)
+            .set(userProfile)
+            .addOnSuccessListener {
+                Log.d("RegisterActivity", "User data saved to Firestore for email/password user: $uid")
+                Toast.makeText(baseContext, "Datos de usuario guardados.", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Log.w("RegisterActivity", "Error saving user data to Firestore", e)
+                Toast.makeText(baseContext, "Error al guardar datos del usuario.", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun saveGoogleUserEmailToFirestore(uid: String, email: String?) {
+        val userProfile = hashMapOf(
+            "email" to (email ?: "N/A"), // Use "N/A" if email is null
+            "otros_datos_completados" to false // Flag to indicate if other data needs to be filled
+        )
+
+        firestore.collection("Perfil")
+            .document(uid)
+            .set(userProfile) // Use set() to create or overwrite the document
+            .addOnSuccessListener {
+                Log.d("RegisterActivity", "Google user email saved to Firestore for user: $uid")
+                Toast.makeText(baseContext, "Correo de Google guardado.", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Log.w("RegisterActivity", "Error saving Google user email to Firestore", e)
+                Toast.makeText(baseContext, "Error al guardar el correo de Google.", Toast.LENGTH_SHORT).show()
             }
     }
 
