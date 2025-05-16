@@ -40,6 +40,8 @@ class LoginActivity : AppCompatActivity() {
         FacebookSdk.sdkInitialize(applicationContext)
         setContentView(R.layout.activity_login)
 
+        com.example.pillware.util.Util.printFacebookKeyHash(this)
+
         auth = FirebaseAuth.getInstance()
         callbackManager = CallbackManager.Factory.create()
 
