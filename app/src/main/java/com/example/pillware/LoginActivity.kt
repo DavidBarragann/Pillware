@@ -1,6 +1,7 @@
 package com.example.pillware
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -8,6 +9,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -33,8 +35,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private val RC_SIGN_IN = 9001
     private lateinit var callbackManager: CallbackManager
-    private lateinit var buttonFacebook : ImageView
 
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FacebookSdk.sdkInitialize(applicationContext)
