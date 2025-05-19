@@ -1,5 +1,6 @@
 package com.example.pillware
 
+import com.example.pillware.ForgotPasswordActivity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -58,6 +59,12 @@ class LoginActivity : AppCompatActivity() {
         val buttonregister = findViewById<TextView>(R.id.registrarse)
         val buttongoogle = findViewById<ImageView>(R.id.imageView2)
         val buttonfacebook = findViewById<ImageView>(R.id.imageView3)
+        val buttonForgot = findViewById<TextView>(R.id.forgotpass)
+
+        buttonForgot.setOnClickListener{
+            val intento = Intent(this, ForgotPasswordActivity::class.java)
+            startActivity(intento)
+        }
 
         buttonregister.setOnClickListener {
             val intento = Intent(this, RegisterActivity::class.java)
@@ -195,6 +202,7 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intento)
         finish() // Termina la actividad de login
     }
+
 
     private fun reload() {
         // Puedes agregar lógica para recargar la interfaz de usuario si es necesario
