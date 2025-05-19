@@ -27,7 +27,6 @@ class ForgotPasswordActivity : AppCompatActivity() {
 
         btnResetPassword.setOnClickListener {
             val email = editTextEmail.text.toString().trim()
-
             if (email.isEmpty()) {
                 editTextEmail.error = "El correo electrónico es requerido"
                 return@setOnClickListener
