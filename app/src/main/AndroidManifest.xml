@@ -80,13 +80,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
-<<<<<<< HEAD
             android:exported="true">
         </activity>
-
-=======
-            android:exported="true" />
->>>>>>> 13c7dde20aa8ba8d8624ad20830100f345025299
     </application>
 
 </manifest>
