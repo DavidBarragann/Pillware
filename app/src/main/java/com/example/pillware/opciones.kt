@@ -5,7 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.FrameLayout // Importa FrameLayout
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -17,7 +17,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.pillware.databinding.ActivityOpcionesBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.auth.FirebaseAuth
-import com.facebook.login.LoginManager // Para cerrar sesión de Facebook
+import com.facebook.login.LoginManager
 
 class opciones : AppCompatActivity() {
 

@@ -209,7 +209,6 @@ class LoginActivity : AppCompatActivity() {
 
 
     private fun reload() {
-        // Puedes agregar lógica para recargar la interfaz de usuario si es necesario
     }
 
     override fun onStart() {
