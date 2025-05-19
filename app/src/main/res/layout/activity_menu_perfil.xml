@@ -9,7 +9,7 @@
     android:background="@color/background">
 
     <ImageView
-
+        android:id="@+id/atras"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -90,14 +90,13 @@
         app:layout_constraintTop_toBottomOf="@+id/usuario" />
 
     <EditText
-        android:id="@+id/textInputLayoutPassword"
-        android:layout_width="300dp"
-        android:layout_height="48sp"
+        android:id="@+id/edad"
+        android:layout_width="300sp"
+        android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/containertext"
-        android:ems="10"
         android:fontFamily="@font/leaguespartanregular"
-        android:hint="74"
+        android:hint="Ingresa tu edad"
         android:paddingLeft="16dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
@@ -117,8 +116,8 @@
         android:text="Email"
         android:textColor="@color/text"
         android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@+id/textInputLayoutPassword"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPassword" />
+        app:layout_constraintStart_toStartOf="@+id/edad"
+        app:layout_constraintTop_toBottomOf="@+id/edad" />
 
     <EditText
         android:id="@+id/emailedittext"
@@ -186,10 +185,8 @@
         android:layout_height="48sp"
         android:layout_marginTop="8dp"
         android:background="@drawable/containertext"
-        android:hint=""
+        android:hint="Ingresa el correo de tu familiar"
         android:fontFamily="@font/leaguespartanmedium"
-        android:focusable="false"
-        android:inputType="date"
         android:paddingLeft="16dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
