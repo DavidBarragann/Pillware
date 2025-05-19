@@ -105,7 +105,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutPassword"
-        android:layout_width="300dp"
+        android:layout_width="300sp"
         android:layout_height="48sp"
         app:layout_constraintEnd_toEndOf="@+id/usuario"
         app:layout_constraintStart_toStartOf="@+id/usuario"
@@ -118,7 +118,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/pass"
-            android:layout_width="300dp"
+            android:layout_width="300sp"
             android:layout_height="match_parent"
             android:background="@null"
             android:fontFamily="@font/leaguespartanregular"

@@ -15,18 +15,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pillware"
         tools:targetApi="31">
+        <activity
+            android:name=".opciones"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCVsRlR5VTqqjgKXxla8Hi7qODLSp5JFbo" />
-
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id"/>
-        <meta-data android:name="com.facebook.sdk.ClientToken"
+            android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="com.facebook.sdk.ClientToken"
             android:value="@string/facebook_client_token"
             tools:replace="android:value" />
-
 
         <activity
             android:name=".bottommenu"
@@ -37,7 +39,7 @@
             android:exported="true" />
         <activity
             android:name=".NuevaContra"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
@@ -46,18 +48,27 @@
             android:exported="false" />
         <activity
             android:name=".Primera"
-            android:exported="true"></activity>
-        <!--Activity login con facebook -->
-        <activity android:name="com.facebook.FacebookActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity><!-- Activity login con facebook -->
+        <activity
+            android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="Pillware"
-            android:exported="false" />
-        <activity android:name="com.facebook.CustomTabActivity"
+            android:exported="false"
+            android:label="Pillware" />
+        <activity
+            android:name="com.facebook.CustomTabActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="@string/facebook_login_protocol_scheme" />
             </intent-filter>
         </activity>
@@ -65,16 +76,17 @@
             android:name=".LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.Pillware">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+
         </activity>
         <activity
             android:name=".MainActivity"
+<<<<<<< HEAD
             android:exported="true">
         </activity>
 
+=======
+            android:exported="true" />
+>>>>>>> 13c7dde20aa8ba8d8624ad20830100f345025299
     </application>
 
 </manifest>

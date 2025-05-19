@@ -78,7 +78,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutPassword"
-        android:layout_width="300dp"
+        android:layout_width="300sp"
         android:layout_height="48sp"
         android:layout_marginTop="8dp"
         android:background="@drawable/containertext"
@@ -86,8 +86,8 @@
         android:textColorHint="@color/lightpurpletext"
         app:endIconMode="password_toggle"
         app:endIconTint="@color/text"
-        app:layout_constraintEnd_toEndOf="@+id/usuario"
-        app:layout_constraintStart_toStartOf="@+id/usuario"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -107,6 +107,46 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
+        android:id="@+id/confirmpass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/leaguespartanmedium"
+        android:text="Confirmar contraseña"
+        android:textColor="@color/text"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@+id/usuario"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPassword" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutConfirmPassword"
+        android:layout_width="300sp"
+        android:layout_height="48sp"
+        android:background="@drawable/containertext"
+        android:paddingBottom="8dp"
+        android:textColorHint="@color/lightpurpletext"
+        app:endIconMode="password_toggle"
+        app:endIconTint="@color/text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/confirmpass">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/confirm_pass"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:fontFamily="@font/leaguespartanregular"
+            android:hint="*************"
+            android:inputType="textPassword"
+            android:paddingStart="8dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="0dp"
+            android:textColor="@color/lightpurpletext"
+            android:textSize="20sp"
+            tools:ignore="TouchTargetSizeCheck" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <TextView
         android:id="@+id/emailtit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -116,7 +156,7 @@
         android:textColor="@color/text"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/textInputLayoutPassword"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutConfirmPassword" />
 
     <EditText
         android:id="@+id/emailedittext"
@@ -239,7 +279,7 @@
         app:layout_constraintTop_toBottomOf="@+id/Registrar" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/googleSignIn"
         android:layout_width="40sp"
         android:layout_height="40dp"
         android:layout_marginStart="8dp"
@@ -252,7 +292,7 @@
         app:tint="@color/azulSP" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/facebookSignIn"
         android:layout_width="40sp"
         android:layout_height="40dp"
         android:layout_marginTop="8dp"
@@ -274,7 +314,7 @@
         android:textColor="@color/text"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="@+id/terms_and_conditions"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2"/>
+        app:layout_constraintTop_toBottomOf="@+id/googleSignIn"/>
 
     <TextView
         android:id="@+id/regLogin"
@@ -288,6 +328,6 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="@+id/terms_and_conditions"
         app:layout_constraintStart_toEndOf="@id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+        app:layout_constraintTop_toBottomOf="@+id/facebookSignIn" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
