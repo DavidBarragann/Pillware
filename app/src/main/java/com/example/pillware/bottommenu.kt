@@ -1,13 +1,12 @@
 package com.example.pillware
 
+import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.pillware.databinding.ActivityBottommenuBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class bottommenu : AppCompatActivity() {
 
@@ -20,16 +19,25 @@ class bottommenu : AppCompatActivity() {
         setContentView(binding.root)
 
         val navView: BottomNavigationView = binding.navView
-
         val navController = findNavController(R.id.nav_host_fragment_activity_bottommenu)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home, R.id.navigation_location, R.id.navigation_notifications
-            )
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
+
+        // Esto conecta los íconos con sus fragments
         navView.setupWithNavController(navController)
+
+        // Interceptamos el botón de la cruz ➕ para abrir otra pantalla
+        navView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_home, R.id.navigation_location, R.id.navigation_notifications -> {
+                    navController.navigate(item.itemId)
+                    true
+                }
+                R.id.nav_add -> {
+                    // Aquí abrimos tu pantalla de agregar medicamento
+                    startActivity(Intent(this, AgregarMedicamentoActivity::class.java))
+                    true
+                }
+                else -> false
+            }
+        }
     }
 }

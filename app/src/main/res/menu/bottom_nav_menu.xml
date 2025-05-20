@@ -10,16 +10,21 @@
         android:id="@+id/navigation_location"
         android:icon="@drawable/outline_location_on_24"
         android:title="@string/title_locations" />
+
+    <!-- 🚨 Este es el botón de la cruz ➕ -->
+    <item
+        android:id="@+id/nav_add"
+        android:icon="@drawable/ic_baseline_add_24"
+        android:title="Agregar" />
+
     <item
         android:id="@+id/navigation_medicos"
         android:icon="@drawable/baseline_insert_drive_file_24"
-        android:title="@string/title_doctors"
-        />
+        android:title="@string/title_doctors" />
+
     <item
         android:id="@+id/navigation_calendar"
         android:icon="@drawable/outline_calendar_month_24"
         android:title="@string/title_calendar" />
-
-
 
 </menu>

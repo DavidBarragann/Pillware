@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
+    implementation(libs.okhttp)
     implementation("com.google.android.material:material:1.11.0")
     implementation("com.google.android.libraries.places:places:3.4.0") // Consolidated Places dependency
     implementation("com.squareup.okhttp3:okhttp:4.11.0")

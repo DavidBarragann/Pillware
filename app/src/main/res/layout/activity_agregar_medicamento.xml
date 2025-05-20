@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <EditText
+            android:id="@+id/editNombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombre del medicamento"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/editHora"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Hora (ej. 08:00)"
+            android:inputType="time" />
+
+        <EditText
+            android:id="@+id/editDosis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Dosis"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/editDetalles"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Detalles"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/btnGuardar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guardar medicamento"
+            android:layout_marginTop="16dp" />
+    </LinearLayout>
+</ScrollView>

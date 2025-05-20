@@ -58,6 +58,8 @@ play-services-maps = { group = "com.google.android.gms", name = "play-services-m
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
 firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
+okhttp = "com.squareup.okhttp3:okhttp:4.11.0"
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
