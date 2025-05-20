@@ -138,36 +138,6 @@
         app:layout_constraintTop_toBottomOf="@+id/emailtit" />
 
     <TextView
-        android:id="@+id/teltit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/leaguespartanmedium"
-        android:text="Número de Teléfono"
-        android:textColor="@color/text"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@+id/emailedittext"
-        app:layout_constraintTop_toBottomOf="@+id/emailedittext" />
-
-    <EditText
-        android:id="@+id/teledittext"
-        android:layout_width="300sp"
-        android:layout_height="48sp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/containertext"
-        android:ems="10"
-        android:fontFamily="@font/leaguespartanregular"
-        android:hint="+52 9999999999"
-        android:inputType="text|phone"
-        android:paddingLeft="16dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:textColorHint="@color/lightpurpletext"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@+id/teltit"
-        app:layout_constraintTop_toBottomOf="@+id/teltit" />
-
-    <TextView
         android:id="@+id/fechanac_titulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -176,8 +146,8 @@
         android:text="Familiar"
         android:textColor="@color/text"
         android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@+id/teledittext"
-        app:layout_constraintTop_toBottomOf="@+id/teledittext" />
+        app:layout_constraintStart_toStartOf="@+id/emailedittext"
+        app:layout_constraintTop_toBottomOf="@+id/emailedittext" />
 
     <EditText
         android:id="@+id/FamiliarEdit"

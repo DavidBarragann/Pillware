@@ -25,6 +25,7 @@ class HomeFragment : Fragment() {
     private lateinit var adapter: MedicamentoAdapter
     private val listaMedicamentos = mutableListOf<Medicamento>()
     private lateinit var textViewNombreUsuario: TextView
+    private lateinit var textViewMensajeCompletarPerfil: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,6 +46,7 @@ class HomeFragment : Fragment() {
         }
 
         textViewNombreUsuario = root.findViewById(R.id.nombreusuario) // Asegúrate de tener este ID en tu XML
+        textViewMensajeCompletarPerfil = root.findViewById(R.id.mensaje_completar) // Asegúrate de tener este ID en tu XML
 
         val currentUser = auth.currentUser
 
@@ -60,8 +62,12 @@ class HomeFragment : Fragment() {
                         if (!nombre.isNullOrEmpty()) {
                             Log.d("HomeFragment", "Nombre del perfil: $nombre")
                             textViewNombreUsuario.text = nombre
+                            textViewMensajeCompletarPerfil.visibility = View.GONE
                         } else {
                             Log.d("HomeFragment", "El nombre del perfil es nulo o vacío.")
+                            textViewNombreUsuario.text = getString(R.string.usuario_desconocido) // O un texto genérico si no hay nombre
+                            textViewMensajeCompletarPerfil.text = getString(R.string.mensaje_completar) // Usar tu string resource
+                            textViewMensajeCompletarPerfil.visibility = View.VISIBLE // Mostrar mensaje
                         }
                     } else {
                         Log.d("HomeFragment", "El documento del perfil no existe para el UID: $userUid")

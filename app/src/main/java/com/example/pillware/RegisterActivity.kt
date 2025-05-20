@@ -32,6 +32,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var editTextPassword: EditText
     private lateinit var editTextConfirmPassword: EditText
     private lateinit var editTextFechaNacimiento: EditText
+    private lateinit var editTextFamiliar: EditText
     private lateinit var buttonRegister: Button
     private lateinit var googleSignInClient: GoogleSignInClient
     private val RC_SIGN_IN = 9001
@@ -57,8 +58,9 @@ class RegisterActivity : AppCompatActivity() {
         editTextNombre = findViewById(R.id.usuario)
         editTextEmail = findViewById(R.id.emailedittext)
         editTextPassword = findViewById(R.id.pass)
-        editTextConfirmPassword = findViewById(R.id.confirm_pass) // Assuming you have this in your layout
+        editTextConfirmPassword = findViewById(R.id.confirm_pass)
         editTextFechaNacimiento = findViewById(R.id.fechanac_edittext)
+        editTextFamiliar = findViewById(R.id.familiar_edit)
         buttonRegister = findViewById(R.id.Registrar)
         val googleSignInButton = findViewById<ImageView>(R.id.googleSignIn)
 
@@ -76,12 +78,6 @@ class RegisterActivity : AppCompatActivity() {
             finish() // Optional: Close the RegisterActivity
         }
 
-        // Campo de Fecha de Nacimiento
-        val color = ContextCompat.getColor(this, R.color.lightpurpletext)
-        editTextFechaNacimiento.setTextColor(color)
-        editTextFechaNacimiento.setOnClickListener {
-            showDatePickerDialog()
-        }
 
         // Botón de Registrar
         buttonRegister.setOnClickListener {
@@ -94,19 +90,6 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    private fun showDatePickerDialog() {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-        val datePickerDialog = DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
-            val selectedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
-            editTextFechaNacimiento.setText(selectedDate)
-        }, year, month, day)
-
-        datePickerDialog.show()
-    }
 
     private fun signUpWithEmailAndPassword() {
         val name = editTextNombre.text.toString().trim()
@@ -114,6 +97,7 @@ class RegisterActivity : AppCompatActivity() {
         val password = editTextPassword.text.toString().trim()
         val confirmPassword = editTextConfirmPassword.text.toString().trim()
         val fechaNacimiento = editTextFechaNacimiento.text.toString().trim()
+        val familiar = editTextFamiliar.text.toString().trim()
 
         if (name.isEmpty()) {
             editTextNombre.error = "El nombre es requerido"
@@ -144,6 +128,16 @@ class RegisterActivity : AppCompatActivity() {
             editTextConfirmPassword.requestFocus()
             return
         }
+        if (fechaNacimiento.isEmpty()) {
+            editTextFechaNacimiento.error = "La edad es requerida"
+            editTextFechaNacimiento.requestFocus()
+            return
+        }
+        if (familiar.isEmpty()) {
+            editTextFamiliar.error = "El familiar es requerido"
+            editTextFamiliar.requestFocus()
+            return
+        }
 
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
@@ -152,7 +146,7 @@ class RegisterActivity : AppCompatActivity() {
                     val user = auth.currentUser
                     user?.let {
                         // Save user data to Firestore
-                        saveUserDataToFirestore(it.uid, name, email, fechaNacimiento)
+                        saveUserDataToFirestore(it.uid, name, email, fechaNacimiento, familiar)
                     }
                     navigateToMainActivity(user?.email)
                     finish()
@@ -204,12 +198,12 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     // --- Firestore Functions ---
-    private fun saveUserDataToFirestore(uid: String, name: String, email: String, fechaNacimiento: String) {
+    private fun saveUserDataToFirestore(uid: String, name: String, email: String, fechaNacimiento: String, familiar:String) {
         val userProfile = hashMapOf(
             "nombre" to name,
             "email" to email,
-            "fecha_nacimiento" to fechaNacimiento,
-            "otros_datos_completados" to false // Flag to indicate if other data needs to be filled
+            "edad" to fechaNacimiento,
+            "familiar" to familiar
         )
 
         firestore.collection("Perfil")

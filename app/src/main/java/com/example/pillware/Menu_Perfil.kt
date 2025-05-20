@@ -33,7 +33,6 @@ class Menu_Perfil : AppCompatActivity() {
         val nombreEditText: EditText = binding.usuario
         val edadEditText: EditText = binding.edad
         val emailEditText: EditText = binding.emailedittext
-        val telefonoEditText: EditText = binding.teledittext
         val familiarEditText: EditText = binding.FamiliarEdit
         val actualizarPerfilButton: Button = binding.aceptar
 
@@ -72,7 +71,6 @@ class Menu_Perfil : AppCompatActivity() {
                         binding.usuario.hint = nombre ?: "Nombre Completo"
                         binding.edad.hint = edad ?: "Ingresa tu edad"
                         binding.emailedittext.hint = email ?: "example@example.com"
-                        binding.teledittext.hint = telefono ?: "+52 9999999999"
                         binding.FamiliarEdit.hint = familiar ?: "Ingresa el correo de tu familiar"
                     }
                 }
@@ -87,14 +85,12 @@ class Menu_Perfil : AppCompatActivity() {
             val nombre = binding.usuario.text.toString().trim()
             val edad = binding.edad.text.toString().trim()
             val email = binding.emailedittext.text.toString().trim()
-            val telefono = binding.teledittext.text.toString().trim()
             val familiar = binding.FamiliarEdit.text.toString().trim()
 
             val userProfile = hashMapOf(
                 "nombre" to (if (nombre.isNotEmpty()) nombre else binding.usuario.hint.toString()),
                 "edad" to (if (edad.isNotEmpty()) edad else binding.edad.hint.toString()),
                 "email" to (if (email.isNotEmpty()) email else binding.emailedittext.hint.toString()),
-                "telefono" to (if (telefono.isNotEmpty()) telefono else binding.teledittext.hint.toString()),
                 "familiar" to (if (familiar.isNotEmpty()) familiar else binding.FamiliarEdit.hint.toString())
             )
 

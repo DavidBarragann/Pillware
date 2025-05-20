@@ -8,6 +8,20 @@
     android:background="@color/background">
 
 
+    <TextView
+        android:id="@+id/mensaje_completar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:text="Necesitas completar tu perfil para empezar a usar la app"
+        android:textColor="@color/red"
+        android:fontFamily="@font/leaguespartanmedium"
+        android:textSize="20sp"
+        android:maxWidth="300dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/perfil" />
+
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/notifications"
         android:layout_width="56dp"
@@ -42,7 +56,7 @@
                 android:fontFamily="@font/leaguespartanlight"
                 android:text="Bienvenido"
                 android:textColor="@color/azulSP"
-                android:textSize="16sp"
+                android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="@+id/profile_image"
                 app:layout_constraintStart_toEndOf="@id/profile_image"
                 app:layout_constraintTop_toTopOf="@+id/profile_image" />
@@ -75,10 +89,12 @@
         android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/searchbarholder"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/perfil">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mensaje_completar">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -109,11 +125,11 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:maxWidth="120dp"
+                    android:maxLines="2"
                     android:text="Agregar Medicamento"
                     android:textAlignment="center"
                     android:textColor="@color/azulSP"
-                    android:textSize="12sp"
-                    android:maxLines="2"/>
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout

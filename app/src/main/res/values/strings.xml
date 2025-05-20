@@ -19,4 +19,7 @@
     <string name="facebook_app_id">9647724902014934</string>
     <string name="facebook_login_protocol_scheme">fb9647724902014934</string>
     <string name="facebook_client_token">e01c8a09a86fc9495d24b4987eaf331f</string>
+    <string name="mensaje_completar">Por favor, completa los datos de tu perfil.</string>
+    <string name="usuario_desconocido">Usuario</string>
+    <string name="error_cargar_perfil">Error al cargar el perfil. Intenta más tarde.</string>
 </resources>

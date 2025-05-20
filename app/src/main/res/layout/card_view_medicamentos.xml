@@ -5,14 +5,15 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="16dp"
-    app:cardElevation="8dp">
+    app:cardElevation="8dp"
+    android:backgroundTint="@color/lightblue">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Icono de verificación -->
+
         <ImageView
             android:id="@+id/check_icon"
             android:layout_width="48dp"
@@ -43,7 +44,7 @@
             android:layout_height="wrap_content"
             android:text="8:00 am - 12:00 pm"
             android:textSize="16sp"
-            android:textColor="@color/text"
+            android:textColor="@color/black"
             android:fontFamily="@font/leaguespartanlight"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/nombre_medicamento"
