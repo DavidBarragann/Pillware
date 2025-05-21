@@ -1,47 +1,178 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+        android:background="@color/background"
+        android:paddingBottom="24dp"> <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/leaguespartansemibold"
+        android:text="Agregar Medicamento"
+        android:textColor="@color/azulSP"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/baseline_arrow_back_ios_new_24"
+            app:tint="@color/azulSP" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:fontFamily="@font/leaguespartanregular"
+            android:text="Nombre del medicamento"
+            android:textColor="@color/text"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="@+id/editNombre"
+            app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
         <EditText
             android:id="@+id/editNombre"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nombre del medicamento"
-            android:inputType="text" />
+            android:layout_width="320sp"
+            android:layout_height="48sp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/containertext2"
+            android:fontFamily="@font/leaguespartanregular"
+            android:paddingLeft="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:inputType="text"
+            android:textColorHint="@color/lightpurpletext"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView5"
+            tools:hint="Paracetamol" />
 
-        <EditText
-            android:id="@+id/editHora"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/horatit"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Hora (ej. 08:00)"
-            android:inputType="time" />
+            android:layout_marginTop="16dp"
+            android:text="Horario(s)"
+            android:fontFamily="@font/leaguespartanregular"
+            android:textSize="18sp"
+            android:textColor="@color/text"
+            app:layout_constraintStart_toStartOf="@+id/editNombre"
+            app:layout_constraintTop_toBottomOf="@+id/editNombre" />
+
+        <LinearLayout
+            android:id="@+id/containerHorarios"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            android:background="@drawable/containertext2"
+            android:padding="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/horatit"
+            app:layout_constraintStart_toStartOf="@+id/editNombre"
+            app:layout_constraintEnd_toEndOf="@+id/editNombre"
+            />
+
+        <Button
+            android:id="@+id/btnAddHora"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+ Agregar Hora"
+            android:fontFamily="@font/leaguespartanregular"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/azulSP"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/containerHorarios"
+            app:layout_constraintStart_toStartOf="@+id/containerHorarios"
+            />
+
+        <TextView
+            android:id="@+id/dosistit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Dosis"
+            android:fontFamily="@font/leaguespartanregular"
+            android:textSize="18sp"
+            android:textColor="@color/text"
+            app:layout_constraintStart_toStartOf="@+id/editNombre"
+            app:layout_constraintTop_toBottomOf="@+id/btnAddHora" />
 
         <EditText
             android:id="@+id/editDosis"
-            android:layout_width="match_parent"
+            android:layout_width="320sp"
+            android:layout_height="48sp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/containertext2"
+            android:fontFamily="@font/leaguespartanregular"
+            android:paddingLeft="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:inputType="text"
+            android:textColorHint="@color/lightpurpletext"
+            app:layout_constraintTop_toBottomOf="@+id/dosistit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:hint="500 mg" />
+
+        <TextView
+            android:id="@+id/indicacionestit"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Dosis"
-            android:inputType="text" />
+            android:layout_marginTop="16dp"
+            android:text="Indicaciones"
+            android:fontFamily="@font/leaguespartanregular"
+            android:textSize="18sp"
+            android:textColor="@color/text"
+            app:layout_constraintStart_toStartOf="@+id/editNombre"
+            app:layout_constraintTop_toBottomOf="@+id/editDosis" />
 
         <EditText
             android:id="@+id/editDetalles"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Detalles"
-            android:inputType="text" />
+            android:layout_width="320sp"
+            android:layout_height="48sp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/containertext2"
+            android:fontFamily="@font/leaguespartanregular"
+            android:paddingLeft="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:inputType="text"
+            android:textColorHint="@color/lightpurpletext"
+            app:layout_constraintTop_toBottomOf="@+id/indicacionestit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:hint="Tomar con alimentos" />
 
         <Button
             android:id="@+id/btnGuardar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Guardar medicamento"
-            android:layout_marginTop="16dp" />
-    </LinearLayout>
+            android:layout_width="300dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/containertext2"
+            android:backgroundTint="@color/azulSP"
+            android:fontFamily="@font/leaguespartanbold"
+            android:text="Guardar"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editDetalles"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

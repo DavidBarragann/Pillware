@@ -16,7 +16,7 @@ object CorreoHelper {
         val json = JSONObject().apply {
             put("service_id", "service_icn6d7u")
             put("template_id", "template_qfeq487")
-            put("user_id", "c1GdWftoGV_CKIhld") // Public Key
+            put("user_id", "c1GdWftoGV_CKIhld")
             put("template_params", JSONObject().apply {
                 put("mensaje", mensajeTexto)
                 put("email", correoUsuario)

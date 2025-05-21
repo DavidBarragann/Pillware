@@ -6,7 +6,7 @@
     android:layout_margin="8dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="8dp"
-    android:backgroundTint="@color/lightblue">
+    android:backgroundTint="@color/ultralightblue">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -61,20 +61,6 @@
             android:textColor="@color/azulSP"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/horario_medicamento"
-            android:layout_marginTop="16dp" />
-
-        <!-- Botón Compartir -->
-        <Button
-            android:id="@+id/button_compartir"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Compartir"
-            android:textSize="14sp"
-            android:background="@drawable/botones"
-            android:textColor="@color/azulSP"
-            app:layout_constraintStart_toEndOf="@id/button_capsula"
-            app:layout_constraintTop_toBottomOf="@id/horario_medicamento"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="16dp" />
 
         <!-- Botón Información -->

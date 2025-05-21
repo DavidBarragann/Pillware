@@ -15,6 +15,7 @@ import com.example.pillware.databinding.FragmentHomeBinding
 import com.example.pillware.opciones
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.example.pillware.AgregarMedicamentoActivity
 
 class HomeFragment : Fragment() {
 
@@ -42,6 +43,12 @@ class HomeFragment : Fragment() {
         val perfilLayout: LinearLayout = binding.perfil // Acceder al LinearLayout por su ID
         perfilLayout.setOnClickListener {
             val intent = Intent(requireContext(), opciones::class.java)
+            startActivity(intent)
+        }
+
+        val addMedButton: LinearLayout = binding.addMedButton
+        addMedButton.setOnClickListener {
+            val intent = Intent(requireContext(), AgregarMedicamentoActivity::class.java)
             startActivity(intent)
         }
 
@@ -81,13 +88,13 @@ class HomeFragment : Fragment() {
             binding.recyclerViewMedicamentos.layoutManager = LinearLayoutManager(requireContext())
             adapter = MedicamentoAdapter(listaMedicamentos)
             binding.recyclerViewMedicamentos.adapter = adapter
-            db.collection("Medicamento").addSnapshotListener { snapshots, _ ->
+            db.collection("Perfil").document(userUid).collection("Medicamentos").addSnapshotListener { snapshots, _ ->
                 listaMedicamentos.clear()
                 snapshots?.forEach {
                     val nombreMed = it.getString("Nombre") ?: ""
-                    val horario = it.getString("Hora") ?: ""
+                    val horariosList = it.get("Horas") as? List<String> ?: emptyList()
                     val capsulas = it.getString("Dosis") ?:""
-                    val medicamento = Medicamento(nombreMed, horario, capsulas)
+                    val medicamento = Medicamento(nombreMed, horariosList, capsulas)
                     listaMedicamentos.add(medicamento)
                 }
                 adapter.notifyDataSetChanged()

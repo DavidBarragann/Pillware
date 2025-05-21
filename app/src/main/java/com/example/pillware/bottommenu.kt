@@ -21,19 +21,12 @@ class bottommenu : AppCompatActivity() {
         val navView: BottomNavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_activity_bottommenu)
 
-        // Esto conecta los íconos con sus fragments
         navView.setupWithNavController(navController)
 
-        // Interceptamos el botón de la cruz ➕ para abrir otra pantalla
         navView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_home, R.id.navigation_location, R.id.navigation_notifications -> {
                     navController.navigate(item.itemId)
-                    true
-                }
-                R.id.nav_add -> {
-                    // Aquí abrimos tu pantalla de agregar medicamento
-                    startActivity(Intent(this, AgregarMedicamentoActivity::class.java))
                     true
                 }
                 else -> false

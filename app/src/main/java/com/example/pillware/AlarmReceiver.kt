@@ -3,43 +3,49 @@ package com.example.pillware
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import java.text.SimpleDateFormat
-import java.util.*
+import android.app.NotificationManager
+import android.app.NotificationChannel
+import android.os.Build
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import com.example.pillware.MainActivity
 
 class AlarmReceiver : BroadcastReceiver() {
 
+    private val CHANNEL_ID = "medicamento_channel"
+    private val NOTIFICATION_ID = 101
+
     override fun onReceive(context: Context, intent: Intent) {
-        val nombre = intent.getStringExtra("nombre") ?: return
-        val horaProgramada = intent.getStringExtra("hora") ?: return
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val nombreMedicamento = intent.getStringExtra("nombre") ?: "Medicamento"
+        val hora = intent.getStringExtra("hora") ?: ""
+        val medicamentoId = intent.getStringExtra("medicamentoId") ?: "" // Recibir el ID
 
-        val db = FirebaseFirestore.getInstance()
-        val medicamentosRef = db.collection("Perfil").document(uid).collection("Medicamentos")
+        createNotificationChannel(context)
 
-        medicamentosRef.whereEqualTo("Nombre", nombre)
-            .whereEqualTo("Hora", horaProgramada)
-            .get()
-            .addOnSuccessListener { documents ->
-                for (doc in documents) {
-                    val horaTomado = doc.getString("HoraTomado")
+        val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_launcher_foreground) // Asegúrate de tener un icono
+            .setContentTitle("¡Es hora de tu medicamento!")
+            .setContentText("$nombreMedicamento a las $hora")
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true) // La notificación se cierra al hacer clic
 
-                    val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-                    val ahora = sdf.format(Date())
+        with(NotificationManagerCompat.from(context)) {
+            val notificationId = (medicamentoId + hora).hashCode()
+            notify(notificationId, notificationBuilder.build())
+        }
+    }
 
-                    val correo = FirebaseAuth.getInstance().currentUser?.email ?: return@addOnSuccessListener
-
-                    // Si no existe HoraTomado o no coincide con la hora actual, no se tomó
-                    if (horaTomado.isNullOrBlank() || horaTomado != ahora) {
-                        val mensaje = "Usuario aún no ha tomado la medicina: $nombre"
-                        CorreoHelper.enviarCorreo(context, mensaje, correo)
-                        Log.d("AlarmReceiver", "Se envió correo porque no se tomó $nombre")
-                    } else {
-                        Log.d("AlarmReceiver", "Medicamento $nombre sí fue tomado a tiempo")
-                    }
-                }
+    private fun createNotificationChannel(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Recordatorios de Medicamentos"
+            val descriptionText = "Canal para las notificaciones de recordatorio de medicamentos."
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                description = descriptionText
             }
+            val notificationManager: NotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 }
