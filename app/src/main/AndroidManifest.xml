@@ -4,7 +4,8 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
         android:allowBackup="true"
@@ -16,6 +17,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pillware"
         tools:targetApi="31">
+        <service
+            android:name=".AlarmProcessingService"
+            android:enabled="true"
+            android:exported="true"></service>
+
         <activity
             android:name=".SettingsActivity"
             android:exported="false" />
@@ -34,9 +40,9 @@
             android:value="@string/facebook_client_token"
             tools:replace="android:value" />
 
-        <activity android:name=".AgregarMedicamentoActivity"
+        <activity
+            android:name=".AgregarMedicamentoActivity"
             android:exported="false" />
-
         <activity
             android:name=".bottommenu"
             android:exported="false"
@@ -82,10 +88,15 @@
         <activity
             android:name=".LoginActivity"
             android:exported="true"
-            android:theme="@style/Theme.Pillware"></activity>
+            android:theme="@style/Theme.Pillware" />
         <activity
             android:name=".MainActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
+
+        <receiver
+            android:name=".AlarmReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
     </application>
 
 </manifest>

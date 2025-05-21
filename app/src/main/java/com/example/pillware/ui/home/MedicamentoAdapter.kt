@@ -7,16 +7,24 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pillware.R
 import android.widget.ImageView
+import androidx.core.content.ContextCompat // Para el color del check icon
+import android.graphics.Color // Para el color de texto del medicamento tomado
 
 data class Medicamento(
+    val id: String = "", // ¡NUEVO! Para almacenar el ID del documento de Firestore
     val nombre: String,
-    val horario: List<String>, // ¡CAMBIO AQUÍ! Ahora es una lista de strings
-    val dosis: String,         // 'capsulas' en tu MedicamentoAdapter, pero 'Dosis' en Firestore y AgregaMedicamentoActivity. Usa el nombre de Firestore.
-    val detalles: String? = null // Añade este campo si lo guardas en Firestore y quieres mostrarlo
+    val horario: List<String>,
+    val dosis: String,
+    val detalles: String? = null,
+    val isTaken: Boolean = false // ¡NUEVO! Para el estado de si se ha tomado
 )
 
-class MedicamentoAdapter(private val listaMedicamentos: List<Medicamento>) :
-    RecyclerView.Adapter<MedicamentoAdapter.MedicamentoViewHolder>() {
+// Define un listener para los eventos de clic
+class MedicamentoAdapter(
+    private val listaMedicamentos: List<Medicamento>,
+    private val onCheckClickListener: (Medicamento, Int) -> Unit, // (medicamento, position)
+    private val onDeleteClickListener: (Medicamento, Int) -> Unit // (medicamento, position)
+) : RecyclerView.Adapter<MedicamentoAdapter.MedicamentoViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MedicamentoViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -28,20 +36,42 @@ class MedicamentoAdapter(private val listaMedicamentos: List<Medicamento>) :
         val medicamento = listaMedicamentos[position]
         holder.nombreTextView.text = medicamento.nombre
 
-        // ¡CAMBIO AQUÍ! Unir la lista de horarios en un solo String para mostrarlo
         if (medicamento.horario.isNotEmpty()) {
-            holder.horarioTextView.text = medicamento.horario.joinToString(", ") // Une las horas con comas
+            holder.horarioTextView.text = medicamento.horario.joinToString(", ")
         } else {
-            holder.horarioTextView.text = "Sin horarios programados" // Mensaje si la lista está vacía
+            holder.horarioTextView.text = "Sin horarios programados"
         }
 
-        // Asumo que 'dosis' en la data class Medicamento se mapea a 'button_capsula' en tu layout
         holder.dosisTextView.text = medicamento.dosis
 
-        // Si tienes más campos en tu layout y en la data class, actualiza aquí.
-        // Por ejemplo:
-        // holder.detallesTextView.text = medicamento.detalles ?: "Sin indicaciones"
-        // holder.checkIcon.visibility = if (medicamento.someCondition) View.VISIBLE else View.GONE
+        // Lógica para el check_icon y el texto del medicamento
+        if (medicamento.isTaken) {
+            holder.checkIcon.setImageResource(R.drawable.baseline_check_circle_24) // Icono de check lleno
+            holder.checkIcon.setColorFilter(ContextCompat.getColor(holder.itemView.context, R.color.verdecheck_checked)) // Un color más oscuro o diferente para indicar tomado
+            holder.nombreTextView.setTextColor(Color.GRAY) // Cambiar color del texto del nombre
+            holder.horarioTextView.setTextColor(Color.GRAY) // Cambiar color del texto del horario
+            holder.dosisTextView.setTextColor(Color.GRAY) // Cambiar color del texto de la dosis
+            // Opcional: tachar el texto si es una opción deseada
+            // holder.nombreTextView.paintFlags = holder.nombreTextView.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+        } else {
+            holder.checkIcon.setImageResource(R.drawable.baseline_check_24) // Icono de check vacío
+            holder.checkIcon.setColorFilter(ContextCompat.getColor(holder.itemView.context, R.color.verdecheck)) // Color original
+            holder.nombreTextView.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.azulSP)) // Color original
+            holder.horarioTextView.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.black)) // Color original
+            holder.dosisTextView.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.azulSP)) // Color original
+            // Opcional: remover tachado
+            // holder.nombreTextView.paintFlags = holder.nombreTextView.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+        }
+
+        // Listener para el check_icon (marcar como tomado)
+        holder.checkIcon.setOnClickListener {
+            onCheckClickListener.invoke(medicamento, position)
+        }
+
+        // Listener para el button_eliminar
+        holder.eliminarButton.setOnClickListener {
+            onDeleteClickListener.invoke(medicamento, position)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -51,10 +81,8 @@ class MedicamentoAdapter(private val listaMedicamentos: List<Medicamento>) :
     inner class MedicamentoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val nombreTextView: TextView = view.findViewById(R.id.nombre_medicamento)
         val horarioTextView: TextView = view.findViewById(R.id.horario_medicamento)
-        // Asegúrate de que R.id.button_capsula sea el ID correcto para tu TextView/Button de la dosis
         val dosisTextView: TextView = view.findViewById(R.id.button_capsula)
         val checkIcon: ImageView = view.findViewById(R.id.check_icon)
-        // Si añades detalles, también necesitas un TextView para ello
-        // val detallesTextView: TextView = view.findViewById(R.id.detalles_medicamento)
+        val eliminarButton: ImageView = view.findViewById(R.id.button_eliminar) // Referencia al botón eliminar
     }
 }
