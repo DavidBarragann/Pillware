@@ -1,6 +1,8 @@
 package com.example.pillware
 
+import com.example.pillware.ForgotPasswordActivity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -8,6 +10,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -33,12 +36,14 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private val RC_SIGN_IN = 9001
     private lateinit var callbackManager: CallbackManager
-    private lateinit var buttonFacebook : ImageView
 
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FacebookSdk.sdkInitialize(applicationContext)
         setContentView(R.layout.activity_login)
+
+        com.example.pillware.util.Util.printFacebookKeyHash(this)
 
         auth = FirebaseAuth.getInstance()
         callbackManager = CallbackManager.Factory.create()
@@ -58,6 +63,12 @@ class LoginActivity : AppCompatActivity() {
         val buttonregister = findViewById<TextView>(R.id.registrarse)
         val buttongoogle = findViewById<ImageView>(R.id.imageView2)
         val buttonfacebook = findViewById<ImageView>(R.id.imageView3)
+        val buttonForgot = findViewById<TextView>(R.id.forgotpass)
+
+        buttonForgot.setOnClickListener{
+            val intento = Intent(this, ForgotPasswordActivity::class.java)
+            startActivity(intento)
+        }
 
         buttonregister.setOnClickListener {
             val intento = Intent(this, RegisterActivity::class.java)
@@ -196,8 +207,8 @@ class LoginActivity : AppCompatActivity() {
         finish() // Termina la actividad de login
     }
 
+
     private fun reload() {
-        // Puedes agregar lógica para recargar la interfaz de usuario si es necesario
     }
 
     override fun onStart() {

@@ -15,12 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pillware"
         tools:targetApi="31">
-
-        <!-- ESTE ES EL NUEVO RECEIVER -->
-        <receiver android:name=".AlarmReceiver" />
-
         <activity
-            android:name=".AgregarMedicamentoActivity"
+            android:name=".opciones"
             android:exported="false" />
 
         <meta-data
@@ -39,6 +35,9 @@
             android:exported="false"
             android:label="@string/title_activity_bottommenu" />
         <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="true" />
+        <activity
             android:name=".NuevaContra"
             android:exported="true" />
         <activity
@@ -49,7 +48,13 @@
             android:exported="false" />
         <activity
             android:name=".Primera"
-            android:exported="true" />
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity><!-- Activity login con facebook -->
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
@@ -60,8 +65,10 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="@string/facebook_login_protocol_scheme" />
             </intent-filter>
         </activity>
@@ -69,14 +76,12 @@
             android:name=".LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.Pillware">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true" />
+            android:exported="true">
+        </activity>
     </application>
 
 </manifest>

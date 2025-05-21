@@ -8,61 +8,93 @@
     android:background="@color/background">
 
 
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/circulos"
-        tools:srcCompat="@drawable/baseline_person_24"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
-        android:id="@+id/Bienvenido"
+        android:id="@+id/mensaje_completar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="8dp"
-        android:fontFamily="@font/leaguespartanlight"
-        android:text="Bienvenido"
-        android:textColor="@color/azulSP"
-        android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/imageView4"
-        app:layout_constraintTop_toTopOf="@+id/imageView4" />
-
-    <TextView
-        android:id="@+id/nombreusuario"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Nombre Perfil"
-        android:fontFamily="@font/leaguespartanregular"
+        android:text="Necesitas completar tu perfil para empezar a usar la app"
+        android:textColor="@color/red"
+        android:fontFamily="@font/leaguespartanmedium"
         android:textSize="20sp"
-        android:textColor="@color/text"
-        app:layout_constraintStart_toStartOf="@+id/Bienvenido"
-        app:layout_constraintTop_toBottomOf="@+id/Bienvenido" />
+        android:maxWidth="300dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/perfil" />
 
-    <ImageView
-        android:id="@+id/imageView5"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/notifications"
+        android:layout_width="56dp"
+        android:layout_height="52dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/circulos"
+        android:src="@drawable/outline_notifications_24"
+        app:civ_circle_background_color="@color/lightblue"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:padding="8dp"
-        tools:srcCompat="@drawable/outline_notifications_24" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/perfil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/Bienvenido"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="16dp"
+                android:fontFamily="@font/leaguespartanlight"
+                android:text="Bienvenido"
+                android:textColor="@color/azulSP"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@+id/profile_image"
+                app:layout_constraintStart_toEndOf="@id/profile_image"
+                app:layout_constraintTop_toTopOf="@+id/profile_image" />
+
+            <TextView
+                android:id="@+id/nombreusuario"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/leaguespartanregular"
+                android:text="Nombre Perfil"
+                android:textColor="@color/text"
+                android:textSize="20sp"
+                app:layout_constraintStart_toEndOf="@id/profile_image"
+                app:layout_constraintTop_toBottomOf="@+id/Bienvenido" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profile_image"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:src="@drawable/proy1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/searchbarholder"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/imageView4">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mensaje_completar">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -92,16 +124,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:maxWidth="120dp"
+                    android:maxLines="2"
                     android:text="Agregar Medicamento"
+                    android:textAlignment="center"
                     android:textColor="@color/azulSP"
                     android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/search_bar"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:background="@drawable/botones"
+                android:layout_width="257dp"
+                android:layout_height="45dp"
+                android:background="@drawable/searchbar"
+                android:backgroundTint="@color/white2"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="8dp"
@@ -126,7 +162,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@null"
-                    android:hint="Buscar medicamento"
+                    android:hint=""
+                    android:maxLines="1"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:textColor="@color/black"
