@@ -1,5 +1,4 @@
 <resources>
-    <!-- Base application theme -->
     <style name="Theme.Pillware" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here -->
         <item name="colorPrimary">@color/azulprimario</item>

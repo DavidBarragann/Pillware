@@ -33,9 +33,6 @@
         </service>
 
         <activity
-            android:name=".SettingsActivity"
-            android:exported="false" />
-        <activity
             android:name=".opciones"
             android:exported="false" />
 

@@ -147,13 +147,6 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <!-- Icono de Filtro -->
-                <ImageView
-                    android:id="@+id/filter_icon"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/baseline_tune_24"
-                    app:tint="@color/black" />
 
                 <!-- Espacio para escribir -->
                 <EditText

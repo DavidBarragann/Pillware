@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginBottom="12dp"
+    android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"> <com.google.android.material.button.MaterialButton
+    android:id="@+id/medicamento_header_button"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Levotiroxina"
+    android:textColor="@color/white"
+    android:textSize="18sp"
+    android:textStyle="bold"
+    android:gravity="start|center_vertical"
+    android:paddingStart="24dp"
+    android:paddingEnd="16dp"
+    android:backgroundTint="@color/azulSP"
+    app:cornerRadius="16dp"
+    app:icon="@drawable/baseline_keyboard_arrow_up_24"
+    app:iconTint="@color/white"
+    app:iconGravity="end"
+    android:insetLeft="0dp"
+    android:insetRight="0dp"
+    android:insetTop="0dp"
+    android:insetBottom="0dp"
+    android:minHeight="60dp"
+    tools:text="Nombre del Medicamento" />
+
+    <LinearLayout
+        android:id="@+id/medicamento_details_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/containertext"
+        android:backgroundTint="@color/background"
+        android:padding="20dp"
+        android:layout_marginTop="-10dp"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dosis por horario:"
+            android:textColor="@color/text"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/text_dosis_horario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            tools:text="1 pildora" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Horario:"
+            android:textColor="@color/text"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/text_horario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            tools:text="7:00 am - 11:00 am - 3:00 pm" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Indicaciones importantes:"
+            android:textColor="@color/text"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/text_indicaciones"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            tools:text="Evitar tomarla con café, en caso de ingerir calcio o hierro esperar al menos 4 horas." />
+
+    </LinearLayout>
+
+</LinearLayout>

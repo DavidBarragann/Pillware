@@ -18,10 +18,10 @@
         tools:layout="@layout/fragment_locations" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.pillware.ui.notifications.NotificationsFragment"
+        android:id="@+id/navigation_historial"
+        android:name="com.example.pillware.ui.historial.HistorialFragment"
         android:label="@string/title_calendar"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_historial" />
 
     <fragment
         android:id="@+id/navigation_calendar"
