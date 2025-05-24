@@ -21,7 +21,7 @@
         android:id="@+id/navigation_notifications"
         android:name="com.example.pillware.ui.notifications.NotificationsFragment"
         android:label="@string/title_calendar"
-        tools:layout="@layout/fragment_doctors" />
+        tools:layout="@layout/fragment_notifications" />
 
     <fragment
         android:id="@+id/navigation_calendar"

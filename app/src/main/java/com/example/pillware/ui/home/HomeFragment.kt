@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.pillware.AgregarMedicamentoActivity
 import com.example.pillware.CorreoHelper
+import com.example.pillware.NotificationsActivity
 
 class HomeFragment : Fragment() {
 
@@ -50,6 +51,12 @@ class HomeFragment : Fragment() {
         val addMedButton: LinearLayout = binding.addMedButton
         addMedButton.setOnClickListener {
             val intent = Intent(requireContext(), AgregarMedicamentoActivity::class.java)
+            startActivity(intent)
+        }
+
+        val notificationsButton: View = binding.notifications
+        notificationsButton.setOnClickListener {
+            val intent = Intent(requireContext(), NotificationsActivity::class.java)
             startActivity(intent)
         }
 
@@ -157,16 +164,12 @@ class HomeFragment : Fragment() {
         db.collection("Perfil").document(uid).collection("Medicamentos").document(medicamento.id)
             .update("isTaken", newIsTakenState)
             .addOnSuccessListener {
-                // *** ELIMINAR ESTAS LÍNEAS ***
-                // val updatedMedicamento = medicamento.copy(isTaken = newIsTakenState)
-                // listaMedicamentos[position] = updatedMedicamento // ESTO CAUSA IndexOutOfBoundsException
-                // adapter.notifyItemChanged(position) // Ya no es necesario aquí
-
                 Toast.makeText(requireContext(), "${medicamento.nombre} marcado como ${if (newIsTakenState) "tomado" else "no tomado"}", Toast.LENGTH_SHORT).show()
 
+
                 if (newIsTakenState && auth.currentUser?.email != null) {
-                    val mensaje = "¡Has tomado tu ${medicamento.nombre} a las ${medicamento.horario.firstOrNull() ?: ""}!"
-                    CorreoHelper.enviarCorreo(requireContext(), mensaje, auth.currentUser!!.email!!)
+                     val mensaje = "¡Has tomado tu ${medicamento.nombre} a las ${medicamento.horario.firstOrNull() ?: ""}!"
+                     CorreoHelper.enviarCorreo(requireContext(), mensaje, auth.currentUser!!.email!!)
                 }
             }
             .addOnFailureListener { e ->
@@ -175,7 +178,6 @@ class HomeFragment : Fragment() {
             }
     }
 
-    // Eliminamos 'position' del parámetro ya que el listener se encargará de la UI
     private fun eliminarMedicamento(medicamento: Medicamento) {
         val uid = auth.currentUser?.uid
         if (uid == null) {
@@ -186,10 +188,6 @@ class HomeFragment : Fragment() {
         db.collection("Perfil").document(uid).collection("Medicamentos").document(medicamento.id)
             .delete()
             .addOnSuccessListener {
-                // *** ELIMINAR ESTAS LÍNEAS ***
-                // listaMedicamentos.removeAt(position) // ESTO CAUSA IndexOutOfBoundsException
-                // adapter.notifyItemRemoved(position) // Ya no es necesario aquí
-
                 Toast.makeText(requireContext(), "${medicamento.nombre} eliminado.", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener { e ->
