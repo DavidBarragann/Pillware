@@ -66,7 +66,7 @@ class RegisterActivity : AppCompatActivity() {
 
         // Botón de retroceso
         buttonBack.setOnClickListener {
-            val intento = Intent(this, LoginActivity::class.java)
+            val intento = Intent(this, Primera::class.java)
             startActivity(intento)
             finish() // Optional: Close the RegisterActivity
         }
