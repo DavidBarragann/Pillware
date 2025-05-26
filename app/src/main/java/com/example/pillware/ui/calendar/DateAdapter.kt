@@ -28,18 +28,25 @@ class DateAdapter(private val onDateClickListener: (DateItem, Int) -> Unit) :
         return DateViewHolder(view)
     }
 
+    // Dentro de tu DateAdapter
     override fun onBindViewHolder(holder: DateViewHolder, position: Int) {
         val dateItem = getItem(position)
         holder.bind(dateItem)
 
-        // Handle selection state
         val isSelected = position == selectedPosition
-        holder.itemView.isSelected = isSelected
-        val textColor = if (isSelected) R.color.white else R.color.text // Adjust colors as needed
+        holder.itemView.isSelected = isSelected // Esto activará el estado 'selected' en el selector de fondo
+
+        val textColor = if (isSelected) R.color.white else R.color.text
         val dayTextColor = if (isSelected) R.color.white else R.color.text
 
         holder.dateNumber.setTextColor(ContextCompat.getColor(holder.itemView.context, textColor))
         holder.dateDay.setTextColor(ContextCompat.getColor(holder.itemView.context, dayTextColor))
+
+        // Opcional: Resaltar el día de hoy si no está seleccionado
+        if (dateItem.isToday && !isSelected) {
+            holder.dateNumber.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.azulSP))
+            holder.dateDay.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.azulSP))
+        }
 
         holder.itemView.setOnClickListener {
             onDateClickListener.invoke(dateItem, holder.adapterPosition)
