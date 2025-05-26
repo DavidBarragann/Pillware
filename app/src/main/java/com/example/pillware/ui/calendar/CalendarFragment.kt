@@ -62,9 +62,6 @@ class CalendarFragment : Fragment() {
         dateAdapter = DateAdapter(::onDateSelected)
         recyclerViewDates.adapter = dateAdapter
 
-        view.findViewById<ImageView>(R.id.back_arrow).setOnClickListener {
-            activity?.onBackPressed()
-        }
 
         view.findViewById<LinearLayout>(R.id.add_cita_button)?.setOnClickListener {
             val intent = android.content.Intent(requireContext(), com.example.pillware.agregar_cita::class.java)

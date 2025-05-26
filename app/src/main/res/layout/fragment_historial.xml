@@ -7,18 +7,6 @@
     android:background="@color/background"
     tools:context=".ui.historial.HistorialFragment">
 
-    <ImageView
-        android:id="@+id/historial_back_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
-        android:contentDescription="Volver"
-        android:src="@drawable/baseline_arrow_back_ios_new_24"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/azulSP" />
-
     <TextView
         android:id="@+id/historial"
         android:layout_width="0dp"

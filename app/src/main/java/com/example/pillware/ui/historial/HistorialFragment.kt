@@ -40,10 +40,6 @@ class HistorialFragment : Fragment() {
         historialAdapter = HistorialMedicamentoAdapter(listaMedicamentosHistorial)
         binding.recyclerViewHistorial.adapter = historialAdapter
 
-        // Configurar botón de retroceso
-        binding.historialBackButton.setOnClickListener {
-            activity?.onBackPressedDispatcher?.onBackPressed()
-        }
 
         // Cargar medicamentos desde Firestore
         loadMedicamentosHistorial()
