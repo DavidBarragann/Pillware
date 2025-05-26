@@ -50,7 +50,8 @@
             android:text="Agregar Cita"
             android:textAlignment="center"
             android:textColor="@color/azulSP"
-            android:textSize="18sp" />
+            android:textSize="20sp"
+            android:fontFamily="@font/leaguespartanlight"/>
     </LinearLayout>
 
     <LinearLayout
@@ -76,8 +77,8 @@
             android:layout_marginStart="16dp"
             android:text="Enero"
             android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textSize="24sp"
+            android:fontFamily="@font/leaguespartansemibold"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -121,26 +122,28 @@
             android:layout_height="wrap_content"
             android:text="Cita:"
             android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textSize="26sp"
+            android:fontFamily="@font/leaguespartansemibold" />
 
         <TextView
             android:id="@+id/patient_name_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
-            android:textSize="14sp"
+            android:textSize="20sp"
             android:layout_marginTop="4dp"
-            tools:text="Alma Carolina Torres" />
+            tools:text="Alma Carolina Torres"
+            android:fontFamily="@font/leaguespartanlight"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Horario de la cita:"
             android:textColor="@color/black"
-            android:textSize="16sp"
+            android:textSize="26sp"
             android:textStyle="bold"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/leaguespartansemibold" />
 
         <TextView
             android:id="@+id/appointment_time_text"
@@ -152,9 +155,10 @@
             android:paddingTop="4dp"
             android:paddingBottom="4dp"
             android:textColor="@color/azulSP"
-            android:textSize="14sp"
+            android:textSize="18sp"
             android:layout_marginTop="4dp"
-            tools:text="11:00 AM" />
+            tools:text="11:00 AM"
+            android:fontFamily="@font/leaguespartanlight"/>
 
         <View
             android:layout_width="match_parent"
@@ -168,8 +172,9 @@
             android:layout_height="wrap_content"
             android:text="Indicaciones importantes"
             android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/leaguespartansemibold"/>
 
         <TextView
             android:id="@+id/important_indications_text"
@@ -178,10 +183,11 @@
             android:background="@drawable/rounded_corners_light_blue_bg"
             android:padding="12dp"
             android:textColor="@color/black"
-            android:textSize="14sp"
+            android:textSize="18sp"
             android:layout_marginTop="8dp"
             android:minHeight="80dp"
-            tools:text="Estar a tiempo" />
+            tools:text="Estar a tiempo"
+            android:fontFamily="@font/leaguespartanlight"/>
 
     </LinearLayout>
 

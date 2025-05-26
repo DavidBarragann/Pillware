@@ -11,8 +11,8 @@
     android:id="@+id/date_number"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:textSize="20sp"
-    android:textStyle="bold"
+    android:textSize="24sp"
+    android:fontFamily="@font/leaguespartansemibold"
     android:textColor="@color/text"
     tools:text="24" />
 
@@ -20,7 +20,8 @@
         android:id="@+id/date_day"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="12sp"
+        android:textSize="16sp"
         android:textColor="@color/text"
-        tools:text="MIE" />
+        tools:text="MIE"
+        android:fontFamily="@font/leaguespartanlight" />
 </LinearLayout>
