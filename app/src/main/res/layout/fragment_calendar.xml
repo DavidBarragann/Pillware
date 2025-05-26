@@ -4,172 +4,212 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     tools:context=".ui.calendar.CalendarFragment"
     android:background="@color/background">
 
-    <TextView
-        android:id="@+id/tituloCitasFragment"
+    <ImageView
+        android:id="@+id/back_arrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/leaguespartansemibold"
-        android:text="Citas Médicas"
-        android:textColor="@color/azulSP"
-        android:textSize="24sp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:textAlignment="center"
-        android:paddingBottom="16dp"/>
-
-    <Button
-        android:id="@+id/btnAddCitaFragment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Agregar Cita"
-        android:background="@drawable/botones"
-        android:backgroundTint="@color/azulSP"
-        android:fontFamily="@font/leaguespartanmedium"
-        android:textColor="@color/white"
-        android:textSize="18sp"
-        android:textAllCaps="false"
-        app:layout_constraintTop_toBottomOf="@+id/tituloCitasFragment"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"/>
+        app:srcCompat="@drawable/baseline_arrow_back_ios_new_24"
+        app:tint="@color/azulSP"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="Back" />
 
     <TextView
-        android:id="@+id/tvTituloListaCitasFragment"
+        android:id="@+id/titulo"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Próximas Citas:"
-        android:textSize="18sp"
-        android:textColor="@color/azulSP"
-        android:fontFamily="@font/leaguespartansemibold"
-        app:layout_constraintTop_toBottomOf="@+id/btnAddCitaFragment"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp"/>
-
-    <TextView
-        android:id="@+id/tvListaCitasFragment"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="No hay citas programadas."
-        android:textSize="16sp"
-        android:textColor="@color/text"
-        android:fontFamily="@font/leaguespartanregular"
-        app:layout_constraintTop_toBottomOf="@+id/tvTituloListaCitasFragment"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"/>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutAgregarCita"
-        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/tvListaCitasFragment"
+        android:fontFamily="@font/leaguespartansemibold"
+        android:text="Calendario"
+        android:textColor="@color/azulSP"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/add_cita_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/titulo"
+        app:layout_constraintTop_toBottomOf="@+id/titulo">
+
+        <ImageView
+            android:id="@+id/add_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:srcCompat="@drawable/ic_baseline_add_24"
+            app:tint="@color/azulSP" />
 
         <TextView
-            android:id="@+id/tvNuevaCitaTitulo"
+            android:id="@+id/add_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nueva Cita:"
+            android:gravity="center"
+            android:maxWidth="120dp"
+            android:maxLines="2"
+            android:text="Agregar Cita"
+            android:textAlignment="center"
+            android:textColor="@color/azulSP"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/search_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/baseline_search_24"
+        app:tint="@color/azulSP"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="Search" />
+
+    <LinearLayout
+        android:id="@+id/month_selector_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/containertext"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/add_cita_button">
+
+        <TextView
+            android:id="@+id/month_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Enero"
+            android:textColor="@color/black"
             android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/baseline_keyboard_arrow_down_24"
+            app:tint="@color/black" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_dates"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/month_selector_layout"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_calendar_date"
+        tools:itemCount="7"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"/>
+
+    <LinearLayout
+        android:id="@+id/appointment_details_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/rounded_corners_light_blue"
+        android:padding="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recycler_view_dates">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre de:"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/patient_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            tools:text="Alma Carolina Torres" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Horario de la cita:"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:id="@+id/appointment_time_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_corners_blue_border"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
             android:textColor="@color/azulSP"
-            android:fontFamily="@font/leaguespartansemibold"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:paddingBottom="8dp"/>
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            tools:text="11:00 AM" />
 
-        <TextView
-            android:id="@+id/tvDescripcionLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Descripción:"
-            android:textSize="16sp"
-            android:textColor="@color/text"
-            android:fontFamily="@font/leaguespartanmedium"
-            app:layout_constraintTop_toBottomOf="@+id/tvNuevaCitaTitulo"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="16dp"/>
-
-        <EditText
-            android:id="@+id/etDescripcionFragment"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
-            android:background="@drawable/containertext"
-            android:padding="12dp"
-            android:textColor="@color/lightpurpletext"
-            android:textColorHint="@color/lightpurpletext"
-            android:textSize="18sp"
-            app:layout_constraintTop_toBottomOf="@+id/tvDescripcionLabel"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp"/>
-
-        <TextView
-            android:id="@+id/tvFechaHoraLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fecha y Hora (YYYY-MM-DD HH:MM):"
-            android:textSize="16sp"
-            android:textColor="@color/text"
-            android:fontFamily="@font/leaguespartanmedium"
-            app:layout_constraintTop_toBottomOf="@+id/etDescripcionFragment"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="16dp"/>
-
-        <EditText
-            android:id="@+id/etFechaHoraFragment"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:inputType="datetime"
-            android:background="@drawable/containertext"
-            android:padding="12dp"
-            android:textColor="@color/lightpurpletext"
-            android:textColorHint="@color/lightpurpletext"
-            android:textSize="18sp"
-            app:layout_constraintTop_toBottomOf="@+id/tvFechaHoraLabel"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp"/>
-
-        <Button
-            android:id="@+id/btnGuardarCitaFragment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Guardar"
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/azulSP"
             android:layout_marginTop="24dp"
-            android:background="@drawable/botones"
-            android:backgroundTint="@color/azulSP"
-            android:fontFamily="@font/leaguespartanmedium"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:textAllCaps="false"
-            app:layout_constraintTop_toBottomOf="@+id/etFechaHoraFragment"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            android:layout_marginBottom="16dp" />
 
-        <Button
-            android:id="@+id/btnCancelarCitaFragment"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancelar"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/botones"
-            android:backgroundTint="@color/white"
-            android:fontFamily="@font/leaguespartanmedium"
-            android:textColor="@color/azulSP"
-            android:textSize="18sp"
-            android:textAllCaps="false"
-            app:layout_constraintTop_toBottomOf="@+id/btnGuardarCitaFragment"
-            app:layout_constraintStart_toStartOf="parent"/>
+            android:text="Indicaciones importante"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/important_indications_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_corners_light_blue_bg"
+            android:padding="12dp"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp"
+            android:minHeight="80dp"
+            tools:text="Estar a tiempo" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
