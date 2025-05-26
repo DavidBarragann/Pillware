@@ -1,4 +1,4 @@
-package com.example.pillware
+package com.example.pillware.ui.calendar
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -8,11 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import com.example.pillware.R
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -20,7 +20,7 @@ class CalendarFragment : Fragment() {
 
     private lateinit var btnAddCita: Button
     private lateinit var tvListaCitas: TextView
-    private lateinit var layoutAgregarCita: ConstraintLayout // Cambiado a ConstraintLayout
+    private lateinit var layoutAgregarCita: ConstraintLayout
     private lateinit var etDescripcion: EditText
     private lateinit var etFechaHora: EditText
     private lateinit var btnGuardarCita: Button
@@ -46,7 +46,6 @@ class CalendarFragment : Fragment() {
         btnAddCita.setOnClickListener {
             layoutAgregarCita.visibility = View.VISIBLE
             btnAddCita.visibility = View.GONE
-            // No es necesario ocultar la lista, ya que el layout de agregar está debajo
         }
 
         btnCancelarCita.setOnClickListener {
@@ -66,7 +65,7 @@ class CalendarFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        mostrarCitasInicial() // Actualizar la lista cuando el fragmento se vuelve visible
+        mostrarCitasInicial()
     }
 
     private fun mostrarCitasInicial() {
@@ -86,8 +85,8 @@ class CalendarFragment : Fragment() {
     }
 
     private fun guardarCita() {
-        val descripcion = etDescripcion.text.toString()
-        val fechaHora = etFechaHora.text.toString()
+        val descripcion = etDescripcion.text.toString().trim()
+        val fechaHora = etFechaHora.text.toString().trim()
 
         if (descripcion.isNotEmpty() && fechaHora.isNotEmpty()) {
             val nuevaCita = Cita(descripcion, fechaHora)
@@ -125,4 +124,4 @@ class CalendarFragment : Fragment() {
     }
 }
 
-data class cita (val descripcion: String, val fechaHora: String)
+data class Cita(val descripcion: String, val fechaHora: String)
