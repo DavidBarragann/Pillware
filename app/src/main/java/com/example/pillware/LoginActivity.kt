@@ -64,10 +64,17 @@ class LoginActivity : AppCompatActivity() {
         val buttongoogle = findViewById<ImageView>(R.id.imageView2)
         val buttonfacebook = findViewById<ImageView>(R.id.imageView3)
         val buttonForgot = findViewById<TextView>(R.id.forgotpass)
+        val buttonbackk = findViewById<ImageView>(R.id.backbtn)
 
         buttonForgot.setOnClickListener{
             val intento = Intent(this, ForgotPasswordActivity::class.java)
             startActivity(intento)
+        }
+
+        buttonbackk.setOnClickListener {
+            val intento = Intent(this, Primera::class.java)
+            startActivity(intento)
+            finish() // Optional: Close the RegisterActivity
         }
 
         buttonregister.setOnClickListener {

@@ -25,7 +25,7 @@ class bottommenu : AppCompatActivity() {
 
         navView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.navigation_home, R.id.navigation_location, R.id.navigation_notifications -> {
+                R.id.navigation_home, R.id.navigation_location, R.id.navigation_historial, R.id.navigation_calendar -> {
                     navController.navigate(item.itemId)
                     true
                 }

@@ -56,7 +56,7 @@
                 android:fontFamily="@font/leaguespartanlight"
                 android:text="Bienvenido"
                 android:textColor="@color/azulSP"
-                android:textSize="20sp"
+                android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="@+id/profile_image"
                 app:layout_constraintStart_toEndOf="@id/profile_image"
                 app:layout_constraintTop_toTopOf="@+id/profile_image" />
@@ -69,7 +69,7 @@
                 android:fontFamily="@font/leaguespartanregular"
                 android:text="Nombre Perfil"
                 android:textColor="@color/text"
-                android:textSize="20sp"
+                android:textSize="24sp"
                 app:layout_constraintStart_toEndOf="@id/profile_image"
                 app:layout_constraintTop_toBottomOf="@+id/Bienvenido" />
 
@@ -129,7 +129,7 @@
                     android:text="Agregar Medicamento"
                     android:textAlignment="center"
                     android:textColor="@color/azulSP"
-                    android:textSize="12sp" />
+                    android:textSize="18sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -147,13 +147,6 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <!-- Icono de Filtro -->
-                <ImageView
-                    android:id="@+id/filter_icon"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/baseline_tune_24"
-                    app:tint="@color/black" />
 
                 <!-- Espacio para escribir -->
                 <EditText

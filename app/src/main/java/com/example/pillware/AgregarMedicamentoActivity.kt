@@ -209,6 +209,8 @@ class AgregarMedicamentoActivity : AppCompatActivity() {
         }
     }
 
+    // ... (tu código existente en AgregarMedicamentoActivity)
+
     private fun programarAlarma(nombreMedicamento: String, hora: String, medicamentoId: String, userId: String) {
         val parts = hora.split(":")
         val hour = parts[0].toInt()
@@ -234,7 +236,8 @@ class AgregarMedicamentoActivity : AppCompatActivity() {
             putExtra("nombre", nombreMedicamento)
             putExtra("hora", hora)
             putExtra("medicamentoId", medicamentoId)
-            putExtra("userId", userId) // Pasar el UID al AlarmReceiver
+            putExtra("userId", userId) // Pasamos el userId
+            putExtra("alarmType", "main_alarm") // Definimos el tipo de alarma inicial
         }
 
         val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

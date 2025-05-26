@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background"
+        android:paddingBottom="24dp"
+        tools:context=".agregar_cita">
+
+        <ImageView
+            android:id="@+id/backBtnAgregarCita"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/baseline_arrow_back_ios_new_24"
+            app:tint="@color/azulSP" />
+
+        <TextView
+            android:id="@+id/tituloAgregarCita"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:fontFamily="@font/leaguespartansemibold"
+            android:text="Agregar Nueva Cita"
+            android:textColor="@color/azulSP"
+            android:textSize="25sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvNombreCita"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:fontFamily="@font/leaguespartanregular"
+            android:text="Nombre de la Cita"
+            android:textColor="@color/text"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="@+id/etNombreCita"
+            app:layout_constraintTop_toBottomOf="@+id/tituloAgregarCita" />
+
+        <EditText
+            android:id="@+id/etNombreCita"
+            android:layout_width="320sp"
+            android:layout_height="48sp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/containertext2"
+            android:fontFamily="@font/leaguespartanregular"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:inputType="text"
+            android:textColorHint="@color/lightpurpletext"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvNombreCita"
+            tools:hint="Introduzca su cita" />
+
+        <TextView
+            android:id="@+id/tvHorariosCita"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/leaguespartanregular"
+            android:text="Horario(s) de la Cita"
+            android:textColor="@color/text"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="@+id/etNombreCita"
+            app:layout_constraintTop_toBottomOf="@+id/etNombreCita" />
+
+        <LinearLayout
+            android:id="@+id/containerHorariosCita"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/containertext2"
+            android:orientation="vertical"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="@+id/etNombreCita"
+            app:layout_constraintStart_toStartOf="@+id/etNombreCita"
+            app:layout_constraintTop_toBottomOf="@+id/tvHorariosCita" />
+
+        <Button
+            android:id="@+id/btnAddHoraCita"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/azulSP"
+            android:fontFamily="@font/leaguespartanregular"
+            android:text="+ Agregar Hora"
+            android:textColor="@color/white"
+            app:layout_constraintStart_toStartOf="@+id/containerHorariosCita"
+            app:layout_constraintTop_toBottomOf="@+id/containerHorariosCita" />
+
+        <TextView
+            android:id="@+id/tvFechaCita"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/leaguespartanregular"
+            android:text="Fecha de la Cita"
+            android:textColor="@color/text"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="@+id/etNombreCita"
+            app:layout_constraintTop_toBottomOf="@+id/btnAddHoraCita" />
+
+        <EditText
+            android:id="@+id/etFechaCita"
+            android:layout_width="320sp"
+            android:layout_height="48sp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/containertext2"
+            android:clickable="true"
+            android:focusable="false"
+            android:fontFamily="@font/leaguespartanregular"
+            android:hint="YYYY-MM-DD"
+            android:inputType="none"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:textColor="@color/lightpurpletext"
+            android:textColorHint="@color/lightpurpletext"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvFechaCita" />
+
+        <TextView
+            android:id="@+id/tvIndicacionesCita"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/leaguespartanregular"
+            android:text="Indicaciones Importantes"
+            android:textColor="@color/text"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="@+id/etNombreCita"
+            app:layout_constraintTop_toBottomOf="@+id/etFechaCita" />
+
+        <EditText
+            android:id="@+id/etIndicacionesCita"
+            android:layout_width="320sp"
+            android:layout_height="wrap_content"
+            android:minHeight="48sp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/containertext2"
+            android:fontFamily="@font/leaguespartanregular"
+            android:hint="Introduzca las indicaciones de su cita"
+            android:inputType="textMultiLine"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:textColor="@color/lightpurpletext"
+            android:textColorHint="@color/lightpurpletext"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvIndicacionesCita" />
+
+        <Button
+            android:id="@+id/btnGuardarCita"
+            android:layout_width="300dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/botones"
+            android:backgroundTint="@color/azulSP"
+            android:fontFamily="@font/leaguespartanbold"
+            android:text="Guardar Cita"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etIndicacionesCita" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

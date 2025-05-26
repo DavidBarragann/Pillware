@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="60dp" android:layout_height="80dp" android:orientation="vertical"
+    android:gravity="center"
+    android:padding="4dp"
+    android:layout_marginEnd="8dp"
+    android:background="@drawable/date_item_background_selector">
+
+    <TextView
+    android:id="@+id/date_number"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textSize="24sp"
+    android:fontFamily="@font/leaguespartansemibold"
+    android:textColor="@color/text"
+    tools:text="24" />
+
+    <TextView
+        android:id="@+id/date_day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="@color/text"
+        tools:text="MIE"
+        android:fontFamily="@font/leaguespartanlight" />
+</LinearLayout>

@@ -3,6 +3,8 @@ package com.example.pillware.ui.home
 import android.content.Intent
 import android.os.Bundle
 import androidx.work.*
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +25,8 @@ import com.example.pillware.RecordatorioWorker
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import com.example.pillware.NotificationsActivity
+import java.util.Locale
 
 class HomeFragment : Fragment() {
 
@@ -31,12 +35,16 @@ class HomeFragment : Fragment() {
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var adapter: MedicamentoAdapter
-    private val listaMedicamentos = mutableListOf<Medicamento>()
+    private val listaMedicamentosOriginal = mutableListOf<Medicamento>()
+    private val listaMedicamentosFiltrada = mutableListOf<Medicamento>()
     private lateinit var textViewNombreUsuario: TextView
     private lateinit var textViewMensajeCompletarPerfil: TextView
 
-    // Constante para el prefijo de las tags de WorkManager
+    
     private val WORK_TAG_PREFIX = "MedicamentoReminder_"
+
+    private var textWatcherAttached = false
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,6 +66,33 @@ class HomeFragment : Fragment() {
         val addMedButton: LinearLayout = binding.addMedButton
         addMedButton.setOnClickListener {
             val intent = Intent(requireContext(), AgregarMedicamentoActivity::class.java)
+            startActivity(intent)
+        }
+
+        if (!textWatcherAttached) {
+            binding.searchText.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+                override fun afterTextChanged(s: Editable?) {
+                    // Asegúrate de que el fragmento está adjunto y el binding no es nulo antes de filtrar
+                    if (isAdded && _binding != null) {
+                        val query = s.toString().trim()
+                        filterMedicamentos(query)
+                    }
+                }
+            })
+            textWatcherAttached = true
+        }
+
+        binding.searchIcon.setOnClickListener {
+            // Asegúrate de que el binding no sea nulo antes de limpiar
+            _binding?.searchText?.setText("")
+        }
+
+        val notificationsButton: View = binding.notifications
+        notificationsButton.setOnClickListener {
+            val intent = Intent(requireContext(), NotificationsActivity::class.java)
             startActivity(intent)
         }
 
@@ -102,7 +137,7 @@ class HomeFragment : Fragment() {
 
             binding.recyclerViewMedicamentos.layoutManager = LinearLayoutManager(requireContext())
             adapter = MedicamentoAdapter(
-                listaMedicamentos,
+                listaMedicamentosFiltrada,
                 onCheckClickListener = { medicamento, position ->
                     toggleMedicamentoTomado(medicamento)
                 },
@@ -120,6 +155,8 @@ class HomeFragment : Fragment() {
                     }
 
                     listaMedicamentos.clear()
+                    listaMedicamentosOriginal.clear()
+
                     snapshots?.forEach { document ->
                         val id = document.id
                         val nombreMed = document.getString("Nombre") ?: ""
@@ -129,19 +166,26 @@ class HomeFragment : Fragment() {
                         val isTaken = document.getBoolean("isTaken") ?: false
 
                         val medicamento = Medicamento(id, nombreMed, horariosList, dosis, detalles, isTaken)
-                        listaMedicamentos.add(medicamento)
+                        listaMedicamentosOriginal.add(medicamento)
                     }
+                    // Antes de llamar a applyCurrentFilter(), verifica si el fragmento está adjunto
+                    if (isAdded) {
+                        applyCurrentFilter()
+                    }
+
                     adapter.notifyDataSetChanged()
                     Log.d("HomeFragment", "Lista de medicamentos actualizada, total: ${listaMedicamentos.size}")
 
                     programarTodosLosRecordatorios()
+                    Log.d("HomeFragment", "Lista de medicamentos actualizada por SnapshotListener, total: ${listaMedicamentosOriginal.size}")
                 }
 
         } else {
             Log.d("HomeFragment", "Ningún usuario logueado.")
             textViewNombreUsuario.text = ""
             textViewMensajeCompletarPerfil.visibility = View.GONE
-            listaMedicamentos.clear()
+            listaMedicamentosOriginal.clear()
+            listaMedicamentosFiltrada.clear()
             if (::adapter.isInitialized) {
                 adapter.notifyDataSetChanged()
             }
@@ -149,14 +193,45 @@ class HomeFragment : Fragment() {
 
         return root
     }
+    // --- Funciones para manejar la búsqueda ---
+    private fun filterMedicamentos(query: String) {
+        listaMedicamentosFiltrada.clear()
+        if (query.isEmpty()) {
+            listaMedicamentosFiltrada.addAll(listaMedicamentosOriginal)
+        } else {
+            val lowerCaseQuery = query.toLowerCase(Locale.getDefault())
+            listaMedicamentosOriginal.forEach { medicamento ->
+                if (medicamento.nombre.toLowerCase(Locale.getDefault()).contains(lowerCaseQuery)) {
+                    listaMedicamentosFiltrada.add(medicamento)
+                }
+            }
+        }
+        adapter.notifyDataSetChanged()
+        // *** CAMBIO CLAVE AQUÍ: Verificar si el fragmento está adjunto antes de mostrar Toast ***
+        if (listaMedicamentosFiltrada.isEmpty() && query.isNotEmpty() && isAdded) {
+            Toast.makeText(requireContext(), "No se encontraron medicamentos para '$query'", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Función para aplicar el filtro actual cada vez que la lista original cambia
+    private fun applyCurrentFilter() {
+        // Ya no necesitamos la comprobación de _binding aquí porque el isAdded en el listener lo filtra
+        val currentQuery = _binding?.searchText?.text.toString().trim()
+        filterMedicamentos(currentQuery)
+    }
+
+    // --- Funciones para manejar los eventos de los botones de medicamento ---
 
     private fun toggleMedicamentoTomado(medicamento: Medicamento) {
-        val newIsTakenState = !medicamento.isTaken
         val uid = auth.currentUser?.uid
         if (uid == null) {
             Toast.makeText(context, "Error: Usuario no autenticado.", Toast.LENGTH_SHORT).show()
+
+            // Verifica si el fragmento está adjunto antes de mostrar Toast
+            if (isAdded) Toast.makeText(requireContext(), "Error: Usuario no autenticado.", Toast.LENGTH_SHORT).show()
             return
         }
+        val newIsTakenState = !medicamento.isTaken
 
         db.collection("Perfil").document(uid).collection("Medicamentos").document(medicamento.id)
             .update("isTaken", newIsTakenState)
@@ -175,6 +250,18 @@ class HomeFragment : Fragment() {
             }
             .addOnFailureListener { e ->
                 Toast.makeText(context, "Error al actualizar estado: ${e.message}", Toast.LENGTH_SHORT).show()
+                // Verifica si el fragmento está adjunto antes de mostrar Toast
+                if (isAdded) Toast.makeText(requireContext(), "${medicamento.nombre} marcado como ${if (newIsTakenState) "tomado" else "no tomado"}", Toast.LENGTH_SHORT).show()
+
+                // Si se marca como tomado y el usuario tiene email, enviar correo de confirmación
+                if (newIsTakenState && auth.currentUser?.email != null) {
+                    val mensaje = "¡Has tomado tu ${medicamento.nombre} a las ${medicamento.horario.firstOrNull() ?: ""}!"
+                    CorreoHelper.enviarCorreo(requireContext(), mensaje, auth.currentUser!!.email!!)
+                }
+            }
+            .addOnFailureListener { e ->
+                // Verifica si el fragmento está adjunto antes de mostrar Toast
+                if (isAdded) Toast.makeText(requireContext(), "Error al actualizar estado: ${e.message}", Toast.LENGTH_SHORT).show()
                 Log.e("HomeFragment", "Error al actualizar estado del medicamento: ${e.message}", e)
             }
     }
@@ -183,6 +270,8 @@ class HomeFragment : Fragment() {
         val uid = auth.currentUser?.uid
         if (uid == null) {
             Toast.makeText(context, "Error: Usuario no autenticado.", Toast.LENGTH_SHORT).show()
+            // Verifica si el fragmento está adjunto antes de mostrar Toast
+            if (isAdded) Toast.makeText(requireContext(), "Error: Usuario no autenticado.", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -200,13 +289,21 @@ class HomeFragment : Fragment() {
             }
             .addOnFailureListener { e ->
                 Toast.makeText(context, "Error al eliminar: ${e.message}", Toast.LENGTH_SHORT).show()
+                // Verifica si el fragmento está adjunto antes de mostrar Toast
+                if (isAdded) Toast.makeText(requireContext(), "${medicamento.nombre} eliminado.", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                // Verifica si el fragmento está adjunto antes de mostrar Toast
+                if (isAdded) Toast.makeText(requireContext(), "Error al eliminar: ${e.message}", Toast.LENGTH_SHORT).show()
                 Log.e("HomeFragment", "Error al eliminar medicamento: ${e.message}", e)
             }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        // Cuando la vista del fragmento es destruida, limpia el binding
         _binding = null
+        textWatcherAttached = false // Restablecer la bandera
     }
 
     // --- FUNCIONES MEJORADAS PARA WORKMANAGER ---

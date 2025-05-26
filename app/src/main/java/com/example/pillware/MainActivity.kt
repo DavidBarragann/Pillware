@@ -9,11 +9,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.example.pillware.R
 import com.example.pillware.databinding.ActivityMainBinding
 import com.example.pillware.ui.home.HomeFragment
 import com.example.pillware.ui.locations.LocationsFragment
-import com.example.pillware.ui.notifications.NotificationsFragment
+import com.example.pillware.ui.historial.HistorialFragment
 import com.example.pillware.ui.calendar.CalendarFragment
 
 class MainActivity : AppCompatActivity() {
@@ -58,8 +57,8 @@ class MainActivity : AppCompatActivity() {
                     loadFragment(LocationsFragment())
                     return@setOnNavigationItemSelectedListener true
                 }
-                R.id.navigation_notifications -> {
-                    loadFragment(NotificationsFragment())
+                R.id.navigation_historial -> {
+                    loadFragment(HistorialFragment())
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.navigation_calendar -> {

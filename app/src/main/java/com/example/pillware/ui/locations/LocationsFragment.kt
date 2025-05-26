@@ -50,7 +50,8 @@ import android.content.Intent
 import android.net.Uri
 import com.google.android.gms.maps.model.Marker
 
-import com.google.android.libraries.places.api.model.OpeningHours
+// No es necesario importar OpeningHours de Places API si no la estás usando directamente
+// import com.google.android.libraries.places.api.model.OpeningHours
 
 class LocationsFragment : Fragment(), OnMapReadyCallback {
 
@@ -92,9 +93,21 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
 
     @SuppressLint("MissingPermission")
     private fun getDeviceLocationAndNearbyPharmacies() {
+        // Verificar si el fragmento sigue adjunto antes de usar requireActivity()
+        if (!isAdded) {
+            Log.w(TAG, "Fragment not added, skipping getDeviceLocationAndNearbyPharmacies.")
+            return
+        }
+
         try {
             val locationResult = fusedLocationClient.lastLocation
             locationResult.addOnCompleteListener(requireActivity()) { task ->
+                // Verificar si el fragmento sigue adjunto antes de interactuar con la UI
+                if (!isAdded) {
+                    Log.w(TAG, "Fragment not added after location task, skipping UI update.")
+                    return@addOnCompleteListener
+                }
+
                 if (task.isSuccessful) {
                     lastKnownLocation = task.result
                     if (lastKnownLocation != null) {
@@ -167,10 +180,12 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
 
                         for (i in 0 until results.length()) {
                             val place = results.getJSONObject(i)
-                            val pharmacyNameFromMaps = place.getString("name").toLowerCase()
+                            val pharmacyNameFromMaps = place.getString("name").toLowerCase(Locale.ROOT) // Usar Locale.ROOT
+                            // En Android es mejor usar toLowerCase(Locale.getDefault()) si el contexto es una UI que cambia con el locale del usuario
+                            // pero para una API externa, ROOT es más seguro.
 
-                            if (pharmacyNameFromMaps.contains("veterinaria") || pharmacyNameFromMaps.lowercase()
-                                    .contains("acupuntura") || pharmacyNameFromMaps.lowercase()
+                            if (pharmacyNameFromMaps.contains("veterinaria") || pharmacyNameFromMaps.lowercase(Locale.ROOT)
+                                    .contains("acupuntura") || pharmacyNameFromMaps.lowercase(Locale.ROOT)
                                     .contains("dermatológica")
                             ) {
                                 continue
@@ -185,15 +200,25 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
 
                             // Buscar el logo en Firestore
                             findPharmacyLogo(pharmacyNameFromMaps) { logoUrl ->
-                                getCustomMarkerBitmap(logoUrl) { bitmapDescriptor -> // Recibimos el BitmapDescriptor aquí
-                                    requireActivity().runOnUiThread {
-                                        val marker= googleMap.addMarker(
-                                            MarkerOptions()
-                                                .position(placeLatLng)
-                                                .title(place.getString("name"))
-                                                .icon(bitmapDescriptor) // Usamos el BitmapDescriptor recibido
-                                        )
-                                        marker?.tag=placeId
+                                // Verificar si el fragmento sigue adjunto antes de llamar a getCustomMarkerBitmap
+                                if (!isAdded) {
+                                    Log.w(TAG, "Fragment not added, skipping getCustomMarkerBitmap call from findPharmacyLogo.")
+                                    return@findPharmacyLogo
+                                }
+                                getCustomMarkerBitmap(logoUrl) { bitmapDescriptor ->
+                                    // Verificar si el fragmento sigue adjunto antes de interactuar con el mapa en el hilo principal
+                                    if (isAdded) { // Usar isAdded aquí también
+                                        requireActivity().runOnUiThread {
+                                            val marker = googleMap.addMarker(
+                                                MarkerOptions()
+                                                    .position(placeLatLng)
+                                                    .title(place.getString("name"))
+                                                    .icon(bitmapDescriptor)
+                                            )
+                                            marker?.tag = placeId
+                                        }
+                                    } else {
+                                        Log.w(TAG, "Fragment not added, skipping adding marker.")
                                     }
                                 }
                             }
@@ -220,7 +245,13 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 Log.e(TAG, "Places Details API failed for ID: $placeId, error: ${e.message}")
-                callback(null, null)
+                // Verificar si el fragmento sigue adjunto antes de llamar al callback de UI
+                if (isAdded) {
+                    requireActivity().runOnUiThread {
+                        callback(null, null)
+                        onSelectedPharmacy(null, null, null) // Pasar null para borrar info si hubo error
+                    }
+                }
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -263,18 +294,39 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
                             }
 
                             // Ejecutar la actualización de la UI en el hilo principal
-                            requireActivity().runOnUiThread {
-                                Log.d(TAG, "Nombre de farmacia obtenido: $pharmacyName")
-                                callback(rating, todayOpeningHours)
-                                onSelectedPharmacy(pharmacyName, rating, todayOpeningHours)
+                            // Verificar si el fragmento sigue adjunto antes de llamar a runOnUiThread
+                            if (isAdded) {
+                                requireActivity().runOnUiThread {
+                                    Log.d(TAG, "Nombre de farmacia obtenido: $pharmacyName")
+                                    callback(rating, todayOpeningHours)
+                                    onSelectedPharmacy(pharmacyName, rating, todayOpeningHours)
+                                }
+                            } else {
+                                Log.w(TAG, "Fragment not added, skipping UI update for place details.")
                             }
                         } else {
                             Log.w(TAG, "Places Details API status not OK for ID: $placeId, status: ${jsonObject.getString("status")}")
-                            callback(null, null)
+                            // Verificar si el fragmento sigue adjunto antes de llamar al callback de UI
+                            if (isAdded) {
+                                requireActivity().runOnUiThread {
+                                    callback(null, null)
+                                    onSelectedPharmacy(null, null, null) // Pasar null para borrar info si hubo error
+                                }
+                            } else {
+                                Log.w(TAG, "Fragment not added, skipping UI update for place details.")
+                            }
                         }
                     } catch (e: JSONException) {
                         Log.e(TAG, "Error parsing Places Details API response for ID: $placeId, error: ${e.message}")
-                        callback(null, null)
+                        // Verificar si el fragmento sigue adjunto antes de llamar al callback de UI
+                        if (isAdded) {
+                            requireActivity().runOnUiThread {
+                                callback(null, null)
+                                onSelectedPharmacy(null, null, null) // Pasar null para borrar info si hubo error
+                            }
+                        } else {
+                            Log.w(TAG, "Fragment not added, skipping UI update for place details.")
+                        }
                     }
                 }
             }
@@ -311,11 +363,19 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun getCustomMarkerBitmap(logoUrl: String?, callback: (BitmapDescriptor) -> Unit) {
-        val customMarkerView = LayoutInflater.from(requireContext()).inflate(R.layout.pharmacy_marker, null)
+        // Verificar si el fragmento sigue adjunto antes de inflar la vista y usar el contexto
+        if (context == null) { // Usar 'context' directamente es mejor que 'requireContext()' si puede ser nulo.
+            Log.w(TAG, "Context is null, cannot create custom marker bitmap.")
+            // Asegurarse de devolver un marcador por defecto si el contexto no está disponible
+            callback(BitmapDescriptorFactory.defaultMarker())
+            return
+        }
+
+        val customMarkerView = LayoutInflater.from(context).inflate(R.layout.pharmacy_marker, null)
         val pharmacyLogoImageView = customMarkerView.findViewById<ImageView>(R.id.logo)
 
         if (!logoUrl.isNullOrEmpty()) {
-            Glide.with(requireContext())
+            Glide.with(requireContext()) // Usar 'context'
                 .load(logoUrl)
                 .addListener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
@@ -326,7 +386,12 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
                     ): Boolean {
                         Log.e(TAG, "Glide load failed for URL: $logoUrl", e)
                         // Llamar al callback con un marcador por defecto en caso de fallo
-                        callback(getDefaultMarkerBitmap())
+                        // Verificar si el fragmento sigue adjunto antes de llamar al callback
+                        if (context != null) {
+                            callback(getDefaultMarkerBitmap())
+                        } else {
+                            Log.w(TAG, "Context is null, cannot provide default marker after Glide fail.")
+                        }
                         return false
                     }
 
@@ -338,16 +403,26 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
                         isFirstResource: Boolean
                     ): Boolean {
                         // Dibujar el Drawable en la vista y obtener el BitmapDescriptor
-                        pharmacyLogoImageView.setImageDrawable(resource)
-                        val bitmapDescriptor = createBitmapDescriptorFromView(customMarkerView)
-                        callback(bitmapDescriptor)
+                        // Verificar si el fragmento sigue adjunto antes de usar el contexto
+                        if (context != null) {
+                            pharmacyLogoImageView.setImageDrawable(resource)
+                            val bitmapDescriptor = createBitmapDescriptorFromView(customMarkerView)
+                            callback(bitmapDescriptor)
+                        } else {
+                            Log.w(TAG, "Context is null, cannot create bitmap descriptor from resource.")
+                        }
                         return false
                     }
                 })
                 .into(pharmacyLogoImageView)
         } else {
             // Llamar al callback inmediatamente con el marcador por defecto
-            callback(getDefaultMarkerBitmap())
+            // Verificar si el fragmento sigue adjunto antes de llamar al callback
+            if (context != null) {
+                callback(getDefaultMarkerBitmap())
+            } else {
+                Log.w(TAG, "Context is null, cannot provide default marker.")
+            }
         }
     }
 
@@ -368,7 +443,12 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun getDefaultMarkerBitmap(): BitmapDescriptor {
-        val customMarkerView = LayoutInflater.from(requireContext()).inflate(R.layout.pharmacy_marker, null)
+        // Verificar si el fragmento sigue adjunto antes de inflar la vista y usar el contexto
+        if (context == null) {
+            Log.w(TAG, "Context is null, cannot create default marker bitmap.")
+            return BitmapDescriptorFactory.defaultMarker() // Retornar un marcador genérico de Google Maps
+        }
+        val customMarkerView = LayoutInflater.from(context).inflate(R.layout.pharmacy_marker, null)
         val pharmacyLogoImageView = customMarkerView.findViewById<ImageView>(R.id.logo)
         pharmacyLogoImageView.setImageResource(R.drawable.pharmacy)
         return createBitmapDescriptorFromView(customMarkerView)
@@ -376,6 +456,12 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(map: GoogleMap) {
         this.googleMap = map
+
+        // Verificar si el fragmento sigue adjunto antes de usar requireContext() y requireActivity()
+        if (!isAdded) {
+            Log.w(TAG, "Fragment not added, skipping map setup.")
+            return
+        }
 
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -402,8 +488,11 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
                     // La actualización de la UI (llamada a onSelectedPharmacy) ya está dentro de runOnUiThread
                 }
             } else {
-                requireActivity().runOnUiThread { // Asegurar que onSelectedPharmacy se llama en el hilo principal
-                    onSelectedPharmacy(pharmacyName, null, null) // Si no hay placeId, mostrar solo el nombre
+                // Verificar si el fragmento sigue adjunto antes de llamar a runOnUiThread
+                if (isAdded) {
+                    requireActivity().runOnUiThread { // Asegurar que onSelectedPharmacy se llama en el hilo principal
+                        onSelectedPharmacy(pharmacyName, null, null) // Si no hay placeId, mostrar solo el nombre
+                    }
                 }
             }
             true
@@ -411,6 +500,12 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun onSelectedPharmacy(pharmacyName: String?, rating: Double?, openingHours: String?) {
+        // Verificar si el fragmento sigue adjunto antes de interactuar con las vistas
+        if (!isAdded || _binding == null) {
+            Log.w(TAG, "Fragment not added or binding is null, skipping onSelectedPharmacy.")
+            return
+        }
+
         BottomSheetBehavior.from(bottomSheet).apply {
             this.state = BottomSheetBehavior.STATE_EXPANDED
         }
@@ -419,7 +514,7 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
         val horarioTextView = binding.bottomSheet.findViewById<TextView>(R.id.horario)
 
         nombreFarmaciaTextView?.text = pharmacyName.takeIf { !it.isNullOrBlank() } ?: selectedMarker?.title ?: "Nombre no disponible"
-        ratingTextView?.text = rating?.let { String.format("%.1f", it) } ?: "Sin rating"
+        ratingTextView?.text = rating?.let { String.format(Locale.getDefault(), "%.1f", it) } ?: "Sin rating" // Usar Locale.getDefault()
         horarioTextView?.text = openingHours ?: "Horario no disponible"
 
         binding.bottomSheet.findViewById<TextView>(R.id.como_llegar)?.setOnClickListener {
@@ -432,6 +527,12 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun openGoogleMapsDirections(startLatitude: Double?, startLongitude: Double?, endLatitude: Double, endLongitude: Double) {
+        // Verificar si el fragmento sigue adjunto antes de iniciar una actividad
+        if (!isAdded) {
+            Log.w(TAG, "Fragment not added, skipping openGoogleMapsDirections.")
+            return
+        }
+
         if (startLatitude != null && startLongitude != null) {
             val gmmIntentUri = Uri.parse("google.navigation:q=$endLatitude,$endLongitude&dirflg=d") // 'd' para ruta en coche
             val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
@@ -453,6 +554,12 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
+        // Verificar si el fragmento sigue adjunto antes de interactuar con googleMap
+        if (!isAdded) {
+            Log.w(TAG, "Fragment not added, skipping onRequestPermissionsResult logic.")
+            return
+        }
+
         when (requestCode) {
             LOCATION_PERMISSION_REQUEST_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -470,12 +577,14 @@ class LocationsFragment : Fragment(), OnMapReadyCallback {
                 } else {
                     Log.i(TAG, "Location permissions denied.")
                     val juriquilla = LatLng(20.6468, -100.4548)
-                    googleMap.moveCamera(
-                        CameraUpdateFactory.newLatLngZoom(
-                            juriquilla,
-                            DEFAULT_ZOOM
+                    if (::googleMap.isInitialized) { // También verificar si googleMap está inicializado
+                        googleMap.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                juriquilla,
+                                DEFAULT_ZOOM
+                            )
                         )
-                    )
+                    }
                 }
             }
 

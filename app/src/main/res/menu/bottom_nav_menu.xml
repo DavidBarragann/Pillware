@@ -12,7 +12,7 @@
         android:title="@string/title_locations" />
 
     <item
-        android:id="@+id/navigation_medicos"
+        android:id="@+id/navigation_historial"
         android:icon="@drawable/baseline_insert_drive_file_24"
         android:title="@string/title_doctors" />
 
