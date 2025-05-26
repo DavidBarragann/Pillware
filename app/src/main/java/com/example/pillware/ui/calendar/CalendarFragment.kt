@@ -68,10 +68,6 @@ class CalendarFragment : Fragment() {
             startActivity(intent)
         }
 
-        view.findViewById<ImageView>(R.id.search_icon).setOnClickListener {
-            Toast.makeText(context, "Funcionalidad de búsqueda en desarrollo", Toast.LENGTH_SHORT).show()
-        }
-
         view.findViewById<LinearLayout>(R.id.month_selector_layout).setOnClickListener {
             showMonthYearPicker()
         }
