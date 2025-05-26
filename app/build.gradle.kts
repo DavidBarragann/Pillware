@@ -88,4 +88,9 @@ dependencies {
 
     //Facebook Auth
     implementation ("com.facebook.android:facebook-login:18.0.3")
+
+    //Work Manager
+    implementation ("androidx.work:work-runtime-ktx:2.9.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1") 
 }
