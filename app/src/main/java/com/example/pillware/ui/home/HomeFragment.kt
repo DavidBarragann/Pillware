@@ -2,7 +2,6 @@ package com.example.pillware.ui.home
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.work.*
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -14,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.work.*
 import com.example.pillware.R
 import com.example.pillware.databinding.FragmentHomeBinding
 import com.example.pillware.opciones
@@ -21,12 +21,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.pillware.AgregarMedicamentoActivity
 import com.example.pillware.CorreoHelper
-import com.example.pillware.RecordatorioWorker
+import com.example.pillware.NotificationsActivity // Asegúrate de que esta actividad exista
+import com.example.pillware.RecordatorioWorker // Asegúrate de que esta clase exista
 import java.text.SimpleDateFormat
-import java.util.*
-import java.util.concurrent.TimeUnit
-import com.example.pillware.NotificationsActivity
+import java.util.Calendar
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 class HomeFragment : Fragment() {
 
@@ -40,11 +40,10 @@ class HomeFragment : Fragment() {
     private lateinit var textViewNombreUsuario: TextView
     private lateinit var textViewMensajeCompletarPerfil: TextView
 
-    
-    private val WORK_TAG_PREFIX = "MedicamentoReminder_"
-
     private var textWatcherAttached = false
 
+    // Constante para el prefijo de las tags de WorkManager
+    private val WORK_TAG_PREFIX = "MedicamentoReminder_"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,13 +68,13 @@ class HomeFragment : Fragment() {
             startActivity(intent)
         }
 
+        // Configuración del TextWatcher para la búsqueda
         if (!textWatcherAttached) {
             binding.searchText.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
                 override fun afterTextChanged(s: Editable?) {
-                    // Asegúrate de que el fragmento está adjunto y el binding no es nulo antes de filtrar
                     if (isAdded && _binding != null) {
                         val query = s.toString().trim()
                         filterMedicamentos(query)
@@ -86,7 +85,6 @@ class HomeFragment : Fragment() {
         }
 
         binding.searchIcon.setOnClickListener {
-            // Asegúrate de que el binding no sea nulo antes de limpiar
             _binding?.searchText?.setText("")
         }
 
@@ -137,7 +135,7 @@ class HomeFragment : Fragment() {
 
             binding.recyclerViewMedicamentos.layoutManager = LinearLayoutManager(requireContext())
             adapter = MedicamentoAdapter(
-                listaMedicamentosFiltrada,
+                listaMedicamentosFiltrada, // Usamos la lista filtrada para el adaptador
                 onCheckClickListener = { medicamento, position ->
                     toggleMedicamentoTomado(medicamento)
                 },
@@ -154,9 +152,7 @@ class HomeFragment : Fragment() {
                         return@addSnapshotListener
                     }
 
-                    listaMedicamentos.clear()
-                    listaMedicamentosOriginal.clear()
-
+                    listaMedicamentosOriginal.clear() // Limpiamos la lista original
                     snapshots?.forEach { document ->
                         val id = document.id
                         val nombreMed = document.getString("Nombre") ?: ""
@@ -168,15 +164,10 @@ class HomeFragment : Fragment() {
                         val medicamento = Medicamento(id, nombreMed, horariosList, dosis, detalles, isTaken)
                         listaMedicamentosOriginal.add(medicamento)
                     }
-                    // Antes de llamar a applyCurrentFilter(), verifica si el fragmento está adjunto
-                    if (isAdded) {
+                    if (isAdded) { // Aplicamos el filtro actual al obtener los datos
                         applyCurrentFilter()
+                        programarTodosLosRecordatorios() // Reprogramar al obtener nuevos datos
                     }
-
-                    adapter.notifyDataSetChanged()
-                    Log.d("HomeFragment", "Lista de medicamentos actualizada, total: ${listaMedicamentos.size}")
-
-                    programarTodosLosRecordatorios()
                     Log.d("HomeFragment", "Lista de medicamentos actualizada por SnapshotListener, total: ${listaMedicamentosOriginal.size}")
                 }
 
@@ -193,6 +184,7 @@ class HomeFragment : Fragment() {
 
         return root
     }
+
     // --- Funciones para manejar la búsqueda ---
     private fun filterMedicamentos(query: String) {
         listaMedicamentosFiltrada.clear()
@@ -207,7 +199,6 @@ class HomeFragment : Fragment() {
             }
         }
         adapter.notifyDataSetChanged()
-        // *** CAMBIO CLAVE AQUÍ: Verificar si el fragmento está adjunto antes de mostrar Toast ***
         if (listaMedicamentosFiltrada.isEmpty() && query.isNotEmpty() && isAdded) {
             Toast.makeText(requireContext(), "No se encontraron medicamentos para '$query'", Toast.LENGTH_SHORT).show()
         }
@@ -215,7 +206,6 @@ class HomeFragment : Fragment() {
 
     // Función para aplicar el filtro actual cada vez que la lista original cambia
     private fun applyCurrentFilter() {
-        // Ya no necesitamos la comprobación de _binding aquí porque el isAdded en el listener lo filtra
         val currentQuery = _binding?.searchText?.text.toString().trim()
         filterMedicamentos(currentQuery)
     }
@@ -225,9 +215,6 @@ class HomeFragment : Fragment() {
     private fun toggleMedicamentoTomado(medicamento: Medicamento) {
         val uid = auth.currentUser?.uid
         if (uid == null) {
-            Toast.makeText(context, "Error: Usuario no autenticado.", Toast.LENGTH_SHORT).show()
-
-            // Verifica si el fragmento está adjunto antes de mostrar Toast
             if (isAdded) Toast.makeText(requireContext(), "Error: Usuario no autenticado.", Toast.LENGTH_SHORT).show()
             return
         }
@@ -236,31 +223,14 @@ class HomeFragment : Fragment() {
         db.collection("Perfil").document(uid).collection("Medicamentos").document(medicamento.id)
             .update("isTaken", newIsTakenState)
             .addOnSuccessListener {
-                Toast.makeText(context, "${medicamento.nombre} marcado como ${if (newIsTakenState) "tomado" else "no tomado"}", Toast.LENGTH_SHORT).show()
-
-                // Asegúrate de que el contexto sea válido antes de enviar el correo
-                context?.let { safeContext ->
-                    if (newIsTakenState && auth.currentUser?.email != null) {
-                        // Aquí, el correo se envía cuando se marca como "tomado".
-                        // No debería haber un retraso aquí, ya que el usuario YA lo tomó.
-                        val mensaje = "¡Has tomado tu ${medicamento.nombre} a las ${medicamento.horario.firstOrNull() ?: ""}!"
-                        CorreoHelper.enviarCorreo(safeContext, mensaje, auth.currentUser!!.email!!)
-                    }
-                }
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(context, "Error al actualizar estado: ${e.message}", Toast.LENGTH_SHORT).show()
-                // Verifica si el fragmento está adjunto antes de mostrar Toast
                 if (isAdded) Toast.makeText(requireContext(), "${medicamento.nombre} marcado como ${if (newIsTakenState) "tomado" else "no tomado"}", Toast.LENGTH_SHORT).show()
 
-                // Si se marca como tomado y el usuario tiene email, enviar correo de confirmación
                 if (newIsTakenState && auth.currentUser?.email != null) {
                     val mensaje = "¡Has tomado tu ${medicamento.nombre} a las ${medicamento.horario.firstOrNull() ?: ""}!"
                     CorreoHelper.enviarCorreo(requireContext(), mensaje, auth.currentUser!!.email!!)
                 }
             }
             .addOnFailureListener { e ->
-                // Verifica si el fragmento está adjunto antes de mostrar Toast
                 if (isAdded) Toast.makeText(requireContext(), "Error al actualizar estado: ${e.message}", Toast.LENGTH_SHORT).show()
                 Log.e("HomeFragment", "Error al actualizar estado del medicamento: ${e.message}", e)
             }
@@ -269,8 +239,6 @@ class HomeFragment : Fragment() {
     private fun eliminarMedicamento(medicamento: Medicamento) {
         val uid = auth.currentUser?.uid
         if (uid == null) {
-            Toast.makeText(context, "Error: Usuario no autenticado.", Toast.LENGTH_SHORT).show()
-            // Verifica si el fragmento está adjunto antes de mostrar Toast
             if (isAdded) Toast.makeText(requireContext(), "Error: Usuario no autenticado.", Toast.LENGTH_SHORT).show()
             return
         }
@@ -278,8 +246,7 @@ class HomeFragment : Fragment() {
         db.collection("Perfil").document(uid).collection("Medicamentos").document(medicamento.id)
             .delete()
             .addOnSuccessListener {
-                Toast.makeText(context, "${medicamento.nombre} eliminado.", Toast.LENGTH_SHORT).show()
-                // Al eliminar, también cancela los WorkManager asociados
+                if (isAdded) Toast.makeText(requireContext(), "${medicamento.nombre} eliminado.", Toast.LENGTH_SHORT).show()
                 val workManager = context?.let { WorkManager.getInstance(it) }
                 medicamento.horario.forEach { hora ->
                     val uniqueWorkTag = "$WORK_TAG_PREFIX${medicamento.id}_$hora"
@@ -288,22 +255,9 @@ class HomeFragment : Fragment() {
                 }
             }
             .addOnFailureListener { e ->
-                Toast.makeText(context, "Error al eliminar: ${e.message}", Toast.LENGTH_SHORT).show()
-                // Verifica si el fragmento está adjunto antes de mostrar Toast
-                if (isAdded) Toast.makeText(requireContext(), "${medicamento.nombre} eliminado.", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener { e ->
-                // Verifica si el fragmento está adjunto antes de mostrar Toast
                 if (isAdded) Toast.makeText(requireContext(), "Error al eliminar: ${e.message}", Toast.LENGTH_SHORT).show()
                 Log.e("HomeFragment", "Error al eliminar medicamento: ${e.message}", e)
             }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        // Cuando la vista del fragmento es destruida, limpia el binding
-        _binding = null
-        textWatcherAttached = false // Restablecer la bandera
     }
 
     // --- FUNCIONES MEJORADAS PARA WORKMANAGER ---
@@ -311,7 +265,10 @@ class HomeFragment : Fragment() {
     private fun programarVerificacionMedicamento(medicamento: Medicamento, horario: String) {
         val currentContext = context
         if (currentContext == null) {
-            Log.e("WorkManager", "Contexto es nulo, no se puede programar WorkManager para ${medicamento.nombre}.")
+            Log.e(
+                "WorkManager",
+                "Contexto es nulo, no se puede programar WorkManager para ${medicamento.nombre}."
+            )
             return
         }
 
@@ -328,7 +285,6 @@ class HomeFragment : Fragment() {
                 if (before(ahora)) {
                     add(Calendar.DAY_OF_YEAR, 1)
                 }
-                // *** AQUÍ ESTÁ EL CAMBIO CLAVE ***
                 // Suma 1 minuto a la hora programada para el recordatorio de verificación.
                 add(Calendar.MINUTE, 1)
             }
@@ -337,9 +293,7 @@ class HomeFragment : Fragment() {
             val delayMillis = horaProxima.timeInMillis - System.currentTimeMillis()
 
             // Asegurarse de que el retraso no sea negativo si la hora ya pasó hace poco.
-            // Si el retraso es negativo (ya ha pasado la hora + 1 minuto), programa para el día siguiente.
             val finalDelayMillis = if (delayMillis < 0) {
-                // Si ya pasó hoy la hora + 1 minuto, calcula para mañana
                 val proximaHoraManana = Calendar.getInstance().apply {
                     time = horaProgramada!!
                     set(Calendar.SECOND, 0)
@@ -366,7 +320,7 @@ class HomeFragment : Fragment() {
                 .build()
 
             val workRequest = OneTimeWorkRequestBuilder<RecordatorioWorker>()
-                .setInitialDelay(finalDelayMillis, TimeUnit.MILLISECONDS) // Usa finalDelayMillis
+                .setInitialDelay(finalDelayMillis, TimeUnit.MILLISECONDS)
                 .setInputData(datos)
                 .addTag(uniqueWorkTag)
                 .build()
@@ -374,17 +328,30 @@ class HomeFragment : Fragment() {
             WorkManager.getInstance(currentContext).enqueue(workRequest)
 
             val scheduledTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(horaProxima.time)
-            Log.d("WorkManager", "Recordatorio programado para ${medicamento.nombre} a las $scheduledTime (1 minuto después de ${horario}). (Tag: $uniqueWorkTag)")
+            Log.d(
+                "WorkManager",
+                "Recordatorio programado para ${medicamento.nombre} a las $scheduledTime (1 minuto después de ${horario}). (Tag: $uniqueWorkTag)"
+            )
         } catch (e: Exception) {
-            Log.e("WorkManager", "Error al programar recordatorio para ${medicamento.nombre}: ${e.message}", e)
+            Log.e(
+                "WorkManager",
+                "Error al programar recordatorio para ${medicamento.nombre}: ${e.message}",
+                e
+            )
         }
     }
 
     private fun programarTodosLosRecordatorios() {
-        listaMedicamentos.forEach { medicamento ->
+        listaMedicamentosOriginal.forEach { medicamento -> // Usamos la lista original para programar
             medicamento.horario.forEach { hora ->
                 programarVerificacionMedicamento(medicamento, hora)
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        textWatcherAttached = false // Restablecer la bandera
     }
 }

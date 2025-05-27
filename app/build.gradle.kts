@@ -68,7 +68,8 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("com.google.android.libraries.places:places:3.4.0") // Consolidated Places dependency
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
-    implementation(libs.firebase.storage.ktx) // Use the latest version available
+    implementation(libs.firebase.storage.ktx)
+    implementation(libs.androidx.work.runtime.ktx) // Use the latest version available
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -10,6 +10,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import android.widget.Toast // Para mostrar Toasts si es necesario
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.pillware.data.NotificationItem
@@ -18,7 +19,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks // Importar Tasks para Tasks.forResult
+import com.google.android.gms.tasks.Tasks
 import java.util.*
 
 class AlarmProcessingService : Service() {
@@ -30,9 +31,9 @@ class AlarmProcessingService : Service() {
     private val SERVICE_NOTIFICATION_ID = 101 // ID único para la notificación del servicio en primer plano
     private val TAG = "AlarmProcessingService"
 
-    // Constante para diferenciar el tipo de alarma en el Intent
     private val ALARM_TYPE_MAIN = "main_alarm"
     private val ALARM_TYPE_FOLLOW_UP = "follow_up_alarm"
+    private val ACTION_MARK_TAKEN = "mark_taken" // Nueva constante para la acción de marcar tomado
 
     override fun onCreate() {
         super.onCreate()
@@ -46,86 +47,119 @@ class AlarmProcessingService : Service() {
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("PillWare en segundo plano")
             .setContentText("Gestionando recordatorios de medicamentos...")
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // Asegúrate de tener este ícono
-            .setPriority(NotificationCompat.PRIORITY_LOW) // Generalmente LOW o MIN para servicios en segundo plano
-            .setOngoing(true) // Hace que la notificación sea "ongoing"
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true)
             .build()
 
-        // 2. Llama a startForeground()
         startForeground(SERVICE_NOTIFICATION_ID, notification)
 
         val nombreMedicamento = intent?.getStringExtra("nombre")
-        val horaMedicamento = intent?.getStringExtra("hora") // Hora original de la pastilla (HH:MM)
+        val horaMedicamento = intent?.getStringExtra("hora")
         val medicamentoId = intent?.getStringExtra("medicamentoId")
         val userId = intent?.getStringExtra("userId")
-        val alarmType = intent?.getStringExtra("alarmType") ?: ALARM_TYPE_MAIN // Obtener el tipo de alarma
+        val alarmType = intent?.getStringExtra("alarmType") ?: ALARM_TYPE_MAIN
 
         Log.d(TAG, "Service started for: $nombreMedicamento at $horaMedicamento, ID: $medicamentoId, UserID: $userId, Type: $alarmType")
 
-        if (nombreMedicamento == null || horaMedicamento == null || medicamentoId == null || userId == null) {
+        if (medicamentoId == null || userId == null) {
             Log.e(TAG, "Intent data missing in service. Stopping self.")
-            stopForeground(true) // Elimina la notificación y detiene el servicio en primer plano
-            stopSelf() // Detener el servicio si faltan datos cruciales
+            stopServiceAndForeground()
             return START_NOT_STICKY
         }
 
         when (alarmType) {
             ALARM_TYPE_MAIN -> {
-                showNotification(nombreMedicamento, horaMedicamento, medicamentoId)
-                scheduleFollowUpAlarm(nombreMedicamento, horaMedicamento, medicamentoId, userId)
+                showNotification(nombreMedicamento.toString(),
+                    horaMedicamento.toString(), medicamentoId, userId) // Pasar userId aquí
+                scheduleFollowUpAlarm(nombreMedicamento.toString(),
+                    horaMedicamento.toString(), medicamentoId, userId)
 
-                // **GUARDAR NOTIFICACIÓN DE PROXIMA_TOMA**
                 val notificationItem = NotificationItem(
-                    id = UUID.randomUUID().toString(), // Genera un ID único
+                    id = UUID.randomUUID().toString(),
                     tipo = NotificationType.PROXIMA_TOMA,
                     titulo = "¡Es hora de tu medicamento!",
                     mensaje = "$nombreMedicamento a las $horaMedicamento",
                     medicamentoNombre = nombreMedicamento,
-                    fechaHora = Date(), // Fecha y hora actual
-                    iconoResId = R.drawable.baseline_access_time_24 // Asegúrate de tener este drawable
+                    fechaHora = Date(),
+                    iconoResId = R.drawable.baseline_access_time_24
                 )
-                saveNotificationToFirestore(userId, notificationItem)
+                saveNotificationToFirestore(userId, notificationItem) { // Añadir callback de finalización
+                    Log.d(TAG, "Notificación PROXIMA_TOMA guardada. Deteniendo servicio si no hay más tareas.")
+                    // Aquí no detenemos el servicio porque aún hay alarmas de seguimiento por programar.
+                    // El servicio se detendrá cuando la última tarea asíncrona termine.
+                }
             }
             ALARM_TYPE_FOLLOW_UP -> {
-                checkMedicamentoStatusAndSendEmail(nombreMedicamento, horaMedicamento, medicamentoId, userId)
+                checkMedicamentoStatusAndSendEmail(nombreMedicamento.toString(),
+                    horaMedicamento.toString(), medicamentoId, userId)
+            }
+            ACTION_MARK_TAKEN -> {
+                val notificationIdToCancel = intent.getIntExtra("notificationId", -1)
+                markMedicineAsTaken(medicamentoId, userId, notificationIdToCancel)
             }
         }
 
-        // Devolvemos START_NOT_STICKY para que el servicio no se reinicie automáticamente
-        // si es terminado por el sistema después de completar su trabajo.
-        // Las llamadas a stopSelf y stopForeground se manejarán en la lógica de finalización de tareas asíncronas.
         return START_NOT_STICKY
     }
 
-    private fun showNotification(nombreMedicamento: String, hora: String, medicamentoId: String) {
+    private fun showNotification(
+        nombreMedicamento: String,
+        hora: String,
+        medicamentoId: String,
+        userId: String // Necesitamos userId aquí para el PendingIntent de "Marcar como tomado"
+    ) {
         val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // Asegúrate de tener un icono adecuado
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("¡Es hora de tu medicamento!")
             .setContentText("$nombreMedicamento a las $hora")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setAutoCancel(true) // La notificación se cierra al hacer clic
+            .setAutoCancel(true)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
 
+        val notificationId = (medicamentoId + hora).hashCode()
+
+        // Intent para abrir la app
         val mainActivityIntent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(
+        val pendingMainActivityIntent: PendingIntent = PendingIntent.getActivity(
             this,
-            0,
+            notificationId + 100, // Request code diferente
             mainActivityIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
         )
-        notificationBuilder.setContentIntent(pendingIntent)
+        notificationBuilder.setContentIntent(pendingMainActivityIntent)
+
+        // Intent para la acción "Marcar como tomado"
+        val markTakenIntent = Intent(this, AlarmReceiver::class.java).apply { // Vuelve al AlarmReceiver
+            putExtra("nombre", nombreMedicamento)
+            putExtra("hora", hora)
+            putExtra("medicamentoId", medicamentoId)
+            putExtra("userId", userId)
+            putExtra("alarmType", ACTION_MARK_TAKEN) // Tipo de acción
+            putExtra("notificationId", notificationId) // Pasar el ID de la notificación para cancelarla
+        }
+        val pendingMarkTakenIntent = PendingIntent.getBroadcast(
+            this,
+            notificationId + 200, // Request code diferente
+            markTakenIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
+        )
+        notificationBuilder.addAction(
+            R.drawable.baseline_check_circle_24, // Asegúrate de tener este drawable
+            "Marcar como tomado",
+            pendingMarkTakenIntent
+        )
 
         with(NotificationManagerCompat.from(this)) {
-            val notificationId = (medicamentoId + hora).hashCode()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !areNotificationsEnabled()) {
                 Log.w(TAG, "Notifications are not enabled for this app. Cannot show notification.")
                 return
             }
             notify(notificationId, notificationBuilder.build())
         }
-        Log.d(TAG, "Notification shown for: $nombreMedicamento")
+        Log.d(TAG, "Notification shown for: $nombreMedicamento (ID: $notificationId)")
     }
 
     private fun createNotificationChannel() {
@@ -139,19 +173,18 @@ class AlarmProcessingService : Service() {
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
-            Log.d(TAG, "Notification channel created.")
         }
     }
 
-    private fun saveNotificationToFirestore(userId: String, notification: NotificationItem) {
+    private fun saveNotificationToFirestore(userId: String, notification: NotificationItem, onComplete: () -> Unit = {}) {
         val notificationMap = hashMapOf(
-            "tipo" to notification.tipo.name, // Guarda el nombre del enum
+            "tipo" to notification.tipo.name,
             "titulo" to notification.titulo,
             "mensaje" to notification.mensaje,
             "medicamentoNombre" to notification.medicamentoNombre,
-            "timestamp" to FieldValue.serverTimestamp(), // Usa el timestamp del servidor
+            "timestamp" to FieldValue.serverTimestamp(),
             "iconoResId" to notification.iconoResId,
-            "leida" to false // Inicialmente no leída
+            "leida" to false
         )
 
         db.collection("Perfil").document(userId)
@@ -159,9 +192,11 @@ class AlarmProcessingService : Service() {
             .add(notificationMap)
             .addOnSuccessListener { documentReference ->
                 Log.d("Firestore", "Notificación guardada con ID: ${documentReference.id}")
+                onComplete()
             }
             .addOnFailureListener { e ->
                 Log.e("Firestore", "Error al guardar notificación: ${e.message}", e)
+                onComplete()
             }
     }
 
@@ -177,25 +212,22 @@ class AlarmProcessingService : Service() {
             set(Calendar.MILLISECOND, 0)
         }
 
-        // Añadir 10 minutos para la alarma de seguimiento
-        calendar.add(Calendar.MINUTE, 10)
+        calendar.add(Calendar.MINUTE, 10) // 10 minutos para la alarma de seguimiento
 
-        // Si la hora de seguimiento ya pasó, programarla para mañana a la misma hora + 10 min
-        if (calendar.before(Calendar.getInstance())) {
+        if (calendar.before(Calendar.getInstance())) { // Si ya pasó, programar para mañana
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
 
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        // Usar un requestCode diferente para la alarma de seguimiento (e.g., hashcode + 1)
-        val followUpRequestCode = (medicamentoId + horaOriginal).hashCode() + 1
+        val followUpRequestCode = (medicamentoId + horaOriginal).hashCode() + 1 // Request code único
 
         val intent = Intent(this, AlarmReceiver::class.java).apply {
             putExtra("nombre", nombreMedicamento)
-            putExtra("hora", horaOriginal) // Sigue siendo la hora original
+            putExtra("hora", horaOriginal)
             putExtra("medicamentoId", medicamentoId)
             putExtra("userId", userId)
-            putExtra("alarmType", ALARM_TYPE_FOLLOW_UP) // Marcar como alarma de seguimiento
+            putExtra("alarmType", ALARM_TYPE_FOLLOW_UP)
         }
 
         val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -216,7 +248,6 @@ class AlarmProcessingService : Service() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
             Log.w(TAG, "Cannot schedule follow-up alarm: SCHEDULE_EXACT_ALARM permission not granted.")
-            // Aquí no se llama a stopSelf ya que esto es una programación, no el final del servicio.
             return
         }
 
@@ -228,22 +259,102 @@ class AlarmProcessingService : Service() {
         Log.d(TAG, "Follow-up alarm for $nombreMedicamento scheduled for ${calendar.time}.")
     }
 
-    private fun checkMedicamentoStatusAndSendEmail(nombreMedicamento: String, horaMedicamento: String, medicamentoId: String, userId: String) {
+    private fun markMedicineAsTaken(medicamentoId: String, userId: String, notificationId: Int) {
+        Log.d(TAG, "Action: Mark medicine $medicamentoId as taken by user $userId. Notif ID: $notificationId")
+        val db = FirebaseFirestore.getInstance()
+        val medicamentoRef = db.collection("Perfil").document(userId)
+            .collection("Medicamentos").document(medicamentoId)
+
+        medicamentoRef.update("isTaken", true)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Medicamento marcado como tomado.", Toast.LENGTH_SHORT).show()
+                val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                if (notificationId != -1) {
+                    notificationManager.cancel(notificationId) // Cancelar la notificación principal
+                    Log.d(TAG, "Notification $notificationId cancelled.")
+                }
+                cancelFollowUpAlarm(medicamentoId) // Cancela la alarma de seguimiento
+
+                // **GUARDAR NOTIFICACIÓN DE TOMA_COMPLETADA**
+                val notificationItem = NotificationItem(
+                    id = UUID.randomUUID().toString(),
+                    tipo = NotificationType.TOMA_COMPLETADA,
+                    titulo = "Toma Registrada",
+                    mensaje = "Has marcado '$medicamentoId' como tomado.", // Puedes mejorar el mensaje con el nombre del medicamento real
+                    medicamentoNombre = medicamentoId, // Aquí deberías tener el nombre real del medicamento
+                    fechaHora = Date(),
+                    iconoResId = R.drawable.baseline_check_circle_24 // Asegúrate de tener este drawable
+                )
+                // Para el nombre del medicamento real, necesitarías cargarlo desde Firestore o pasarlo por el Intent
+                // Por simplicidad, aquí estoy usando medicamentoId, pero es mejor el nombre real.
+                db.collection("Perfil").document(userId)
+                    .collection("Medicamentos").document(medicamentoId)
+                    .get()
+                    .addOnSuccessListener { doc ->
+                        val nombreReal = doc.getString("Nombre") ?: medicamentoId
+                        val completedNotification = notificationItem.copy(
+                            mensaje = "Has marcado '$nombreReal' como tomado.",
+                            medicamentoNombre = nombreReal
+                        )
+                        saveNotificationToFirestore(userId, completedNotification) {
+                            Log.d(TAG, "Notificación TOMA_COMPLETADA guardada. Deteniendo servicio.")
+                            stopServiceAndForeground() // Finalizar el servicio después de esta acción
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e(TAG, "Error getting real medicine name for completed notification: ${e.message}", e)
+                        saveNotificationToFirestore(userId, notificationItem) {
+                            Log.d(TAG, "Notificación TOMA_COMPLETADA guardada (sin nombre real). Deteniendo servicio.")
+                            stopServiceAndForeground() // Finalizar el servicio
+                        }
+                    }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Error al marcar como tomado: ${e.message}", Toast.LENGTH_SHORT).show()
+                Log.e(TAG, "Error marking medicine as taken: ${e.message}", e)
+                stopServiceAndForeground() // Detener el servicio incluso en caso de error
+            }
+    }
+
+    private fun cancelFollowUpAlarm(medicamentoId: String) {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val followUpRequestCode = (medicamentoId + "_follow_up").hashCode() // Usa el mismo request code de la programación
+
+        val followUpIntent = Intent(this, AlarmReceiver::class.java).apply {
+            putExtra("medicamentoId", medicamentoId)
+            putExtra("alarmType", ALARM_TYPE_FOLLOW_UP)
+        }
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            followUpRequestCode,
+            followUpIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
+        )
+        alarmManager.cancel(pendingIntent)
+        Log.d(TAG, "Follow-up alarm for $medicamentoId cancelled.")
+    }
+
+    private fun checkMedicamentoStatusAndSendEmail(
+        nombreMedicamento: String,
+        horaMedicamento: String,
+        medicamentoId: String,
+        userId: String
+    ) {
         val medicamentoDocRef = db.collection("Perfil").document(userId).collection("Medicamentos").document(medicamentoId)
 
         medicamentoDocRef.get()
             .addOnSuccessListener { documentSnapshot ->
                 val isTaken = documentSnapshot.getBoolean("isTaken") ?: false
-                Log.d(TAG, "Checking status for $nombreMedicamento: isTaken = $isTaken")
+                Log.d(TAG, "Verificando estado para $nombreMedicamento: isTaken = $isTaken")
 
-                val emailSentTask: Task<Void> = if (!isTaken) {
-                    // Medicamento NO ha sido tomado, obtener correo del familiar y enviar.
+                if (!isTaken) {
+                    // El medicamento NO ha sido tomado, obtener correo del familiar y enviar.
                     db.collection("Perfil").document(userId).get()
                         .addOnSuccessListener { userProfileSnapshot ->
                             val correoFamiliar = userProfileSnapshot.getString("familiar")
                             if (!correoFamiliar.isNullOrEmpty()) {
-                                Log.d(TAG, "Sending email to family member: $correoFamiliar")
-                                val mensaje = "¡Alerta! Parece que $nombreMedicamento no ha sido registrado como tomado por el usuario a las $horaMedicamento."
+                                Log.d(TAG, "Enviando correo al familiar: $correoFamiliar")
+                                val mensaje = "¡Alerta de PillWare!\n\nEl medicamento '$nombreMedicamento' no ha sido marcado como tomado por el usuario a las $horaMedicamento."
                                 CorreoHelper.enviarCorreo(applicationContext, mensaje, correoFamiliar)
 
                                 // **GUARDAR NOTIFICACIÓN DE RECORDATORIO (con familiar)**
@@ -254,12 +365,14 @@ class AlarmProcessingService : Service() {
                                     mensaje = "Parece que $nombreMedicamento no ha sido registrado como tomado a las $horaMedicamento. Se ha notificado al familiar.",
                                     medicamentoNombre = nombreMedicamento,
                                     fechaHora = Date(),
-                                    iconoResId = R.drawable.baseline_warning_24 // Asegúrate de tener este drawable
+                                    iconoResId = R.drawable.baseline_warning_24
                                 )
-                                saveNotificationToFirestore(userId, notificationItem)
-
+                                saveNotificationToFirestore(userId, notificationItem) {
+                                    // Después de guardar la notificación y enviar el correo (simulado por CorreoHelper)
+                                    resetAndReprogram(userId, medicamentoId, nombreMedicamento, horaMedicamento)
+                                }
                             } else {
-                                Log.w(TAG, "No family email found for user $userId to send reminder.")
+                                Log.w(TAG, "No se encontró correo de familiar para el usuario $userId. No se envía correo.")
                                 // **GUARDAR NOTIFICACIÓN DE RECORDATORIO (sin familiar)**
                                 val notificationItem = NotificationItem(
                                     id = UUID.randomUUID().toString(),
@@ -270,12 +383,14 @@ class AlarmProcessingService : Service() {
                                     fechaHora = Date(),
                                     iconoResId = R.drawable.baseline_warning_24
                                 )
-                                saveNotificationToFirestore(userId, notificationItem)
+                                saveNotificationToFirestore(userId, notificationItem) {
+                                    // Después de guardar la notificación
+                                    resetAndReprogram(userId, medicamentoId, nombreMedicamento, horaMedicamento)
+                                }
                             }
                         }
                         .addOnFailureListener { e ->
-                            Log.e(TAG, "Error getting user profile for family email: ${e.message}", e)
-                            // Si falla la obtención del perfil, igual guardar el recordatorio básico
+                            Log.e(TAG, "Error obteniendo perfil de usuario para correo de familiar: ${e.message}", e)
                             val notificationItem = NotificationItem(
                                 id = UUID.randomUUID().toString(),
                                 tipo = NotificationType.RECORDATORIO,
@@ -285,56 +400,38 @@ class AlarmProcessingService : Service() {
                                 fechaHora = Date(),
                                 iconoResId = R.drawable.baseline_warning_24
                             )
-                            saveNotificationToFirestore(userId, notificationItem)
+                            saveNotificationToFirestore(userId, notificationItem) {
+                                resetAndReprogram(userId, medicamentoId, nombreMedicamento, horaMedicamento)
+                            }
                         }
-                    // Return a completed task as CorreoHelper.enviarCorreo doesn't return a Task
-                    Tasks.forResult(null)
                 } else {
-                    Log.d(TAG, "$nombreMedicamento was marked as taken. No email sent.")
-                    // **OPCIONAL: GUARDAR NOTIFICACIÓN DE TOMA_COMPLETADA desde aquí**
-                    // Es más robusto si esto se hace donde el usuario interactúa para marcarlo como tomado.
-                    // Pero si NO tienes un lugar donde se genere esta notificación, puedes añadirla aquí.
-                    /*
-                    val notificationItem = NotificationItem(
-                        id = UUID.randomUUID().toString(),
-                        tipo = NotificationType.TOMA_COMPLETADA,
-                        titulo = "Toma Completada",
-                        mensaje = "Has registrado la toma de $nombreMedicamento a las $horaMedicamento.",
-                        medicamentoNombre = nombreMedicamento,
-                        fechaHora = Date(),
-                        iconoResId = R.drawable.baseline_check_circle_24
-                    )
-                    saveNotificationToFirestore(userId, notificationItem)
-                    */
-                    Tasks.forResult(null)
-                }
-
-                emailSentTask.addOnCompleteListener {
-                    // Después de verificar el estado y potencialmente enviar el correo/guardar notificación
-                    // (si emailSentTask es una tarea real)
-                    updateIsTakenStatusToFalse(userId, medicamentoId, nombreMedicamento)
-                        .addOnCompleteListener { updateTask ->
-                            reprogramarAlarma(nombreMedicamento, horaMedicamento, medicamentoId, userId)
-                                .addOnCompleteListener { rescheduleTask ->
-                                    // Todas las operaciones asíncronas principales han terminado.
-                                    stopForeground(true) // Oculta la notificación y saca del primer plano
-                                    stopSelf() // Detiene el servicio
-                                }
-                        }
+                    Log.d(TAG, "$nombreMedicamento ya fue marcado como tomado. No se envía correo. Restableciendo y reprogramando.")
+                    // Si ya fue tomado, simplemente restablecer y reprogramar
+                    // No necesitas guardar una notificación de "completada" aquí si ya la guardas al marcar.
+                    resetAndReprogram(userId, medicamentoId, nombreMedicamento, horaMedicamento)
                 }
             }
             .addOnFailureListener { e ->
-                Log.e(TAG, "Error getting medicamento status: ${e.message}", e)
-                // En caso de error al obtener el estado, igual intentar reprogramar y detener el servicio
+                Log.e(TAG, "Error obteniendo estado del medicamento: ${e.message}", e)
+                // En caso de error, al menos intentar reprogramar para el día siguiente
                 reprogramarAlarma(nombreMedicamento, horaMedicamento, medicamentoId, userId)
                     .addOnCompleteListener {
-                        stopForeground(true)
-                        stopSelf()
+                        stopServiceAndForeground()
                     }
             }
     }
 
-    // Nueva función para actualizar isTaken a false
+    private fun resetAndReprogram(userId: String, medicamentoId: String, nombreMedicamento: String, horaMedicamento: String) {
+        updateIsTakenStatusToFalse(userId, medicamentoId, nombreMedicamento)
+            .addOnCompleteListener { updateTask ->
+                reprogramarAlarma(nombreMedicamento, horaMedicamento, medicamentoId, userId)
+                    .addOnCompleteListener { rescheduleTask ->
+                        Log.d(TAG, "Todas las operaciones asíncronas completadas. Deteniendo servicio.")
+                        stopServiceAndForeground() // Detener el servicio aquí
+                    }
+            }
+    }
+
     private fun updateIsTakenStatusToFalse(userId: String, medicamentoId: String, nombreMedicamento: String): Task<Void> {
         val docRef = db.collection("Perfil").document(userId).collection("Medicamentos").document(medicamentoId)
         return docRef.update("isTaken", false)
@@ -356,15 +453,11 @@ class AlarmProcessingService : Service() {
             set(Calendar.MINUTE, minute)
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
-
-            // Reprogramar para el día siguiente
-            add(Calendar.DAY_OF_YEAR, 1)
+            add(Calendar.DAY_OF_YEAR, 1) // Reprogramar para el día siguiente
         }
 
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        // Usar el mismo requestCode de la alarma principal para que se sobrescriba
-        val requestCode = (medicamentoId + hora).hashCode()
+        val requestCode = (medicamentoId + hora).hashCode() // El mismo request code para sobrescribir
 
         val intent = Intent(this, AlarmReceiver::class.java).apply {
             putExtra("nombre", nombreMedicamento)
@@ -392,7 +485,7 @@ class AlarmProcessingService : Service() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
             Log.w(TAG, "Cannot reprogram main alarm: SCHEDULE_EXACT_ALARM permission not granted.")
-            return Tasks.forResult(null) // Devuelve una tarea completada si no se puede programar
+            return Tasks.forResult(null)
         }
 
         alarmManager.setExactAndAllowWhileIdle(
@@ -401,20 +494,25 @@ class AlarmProcessingService : Service() {
             pendingIntent
         )
         Log.d(TAG, "Main alarm for $nombreMedicamento reprogrammed for ${calendar.time}.")
-        return Tasks.forResult(null) // setExactAndAllowWhileIdle no devuelve una tarea directamente
+        return Tasks.forResult(null)
+    }
+
+    private fun stopServiceAndForeground() {
+        stopForeground(true) // Elimina la notificación y detiene el servicio en primer plano
+        stopSelf() // Detiene el servicio
+        Log.d(TAG, "Service stopped.")
     }
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
 
-    // Helper para verificar el permiso de notificaciones (Android 13+)
     private fun areNotificationsEnabled(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.areNotificationsEnabled()
         } else {
-            true // En versiones anteriores a Android 13, las notificaciones están habilitadas por defecto si no se han deshabilitado manualmente.
+            true
         }
     }
 }
