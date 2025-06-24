@@ -270,6 +270,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/leaguespartanlight"
+        android:textColor="@color/text"
         android:text="o registrar con:"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="@+id/Registrar"

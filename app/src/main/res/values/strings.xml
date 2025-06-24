@@ -1,25 +1,40 @@
 <resources>
     <string name="app_name">Pillware</string>
-    <string name="title_activity_login">LoginActivity</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome !"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
-    <string name="title_activity_bottommenu">bottommenu</string>
-    <string name="title_home">Home</string>
+    <string name="title_activity_login" translatable="false">LoginActivity</string>
+    <string name="prompt_email" translatable="false">Email</string>
+    <string name="prompt_password" translatable="false">Password</string>
+    <string name="action_sign_in" translatable="false">Sign in or register</string>
+    <string name="action_sign_in_short" translatable="false">Sign in</string>
+    <string name="welcome" translatable="false">"Welcome !"</string>
+    <string name="invalid_username" translatable="false">Not a valid username</string>
+    <string name="invalid_password" translatable="false">Password must be >5 characters</string>
+    <string name="login_failed" translatable="false">"Login failed"</string>
+    <string name="title_activity_bottommenu" translatable="false">bottommenu</string>
+    <string name="title_home" translatable="false">Home</string>
     <string name="title_locations">Ubicaciones</string>
     <string name="title_calendar">Calendario</string>
     <string name="title_doctors">Médicos</string>
-    <string name="google_maps_key">AIzaSyCVsRlR5VTqqjgKXxla8Hi7qODLSp5JFbo</string>
-    <string name="client_web">944257168051-c2u3r59v1in02eonv5m947ujnf81alov.apps.googleusercontent.com</string>
-    <string name="facebook_app_id">9647724902014934</string>
-    <string name="facebook_login_protocol_scheme">fb9647724902014934</string>
-    <string name="facebook_client_token">e01c8a09a86fc9495d24b4987eaf331f</string>
+    <string name="google_maps_key" translatable="false">AIzaSyCVsRlR5VTqqjgKXxla8Hi7qODLSp5JFbo</string>
+    <string name="client_web" translatable="false">944257168051-c2u3r59v1in02eonv5m947ujnf81alov.apps.googleusercontent.com</string>
+    <string name="facebook_app_id" translatable="false">9647724902014934</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb9647724902014934</string>
+    <string name="facebook_client_token" translatable="false">e01c8a09a86fc9495d24b4987eaf331f</string>
     <string name="mensaje_completar">Por favor, completa los datos de tu perfil.</string>
     <string name="usuario_desconocido">Usuario</string>
     <string name="error_cargar_perfil">Error al cargar el perfil. Intenta más tarde.</string>
+    <string-array name="unidades_medicamento">
+        <item>pastillas</item>
+        <item>tabletas</item>
+        <item>cápsulas</item>
+        <item>ampolletas</item>
+        <item>ml</item>
+        <item>mg</item>
+        <item>cucharadas</item>
+        <item>dosis</item>
+    </string-array>
+    <string-array name="unidades_frecuencia">
+        <item>días</item>
+        <item>horas</item>
+        <item>semanas</item>
+    </string-array>
 </resources>

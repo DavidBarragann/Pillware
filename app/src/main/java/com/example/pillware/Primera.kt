@@ -3,6 +3,7 @@ package com.example.pillware
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.pillware.databinding.ActivityPrimeraBinding
 
 class Primera : AppCompatActivity() {
@@ -10,6 +11,7 @@ class Primera : AppCompatActivity() {
     private lateinit var binding: ActivityPrimeraBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         binding = ActivityPrimeraBinding.inflate(layoutInflater)

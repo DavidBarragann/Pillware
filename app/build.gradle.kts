@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.pillware"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -65,8 +65,8 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
-    implementation("com.google.android.material:material:1.11.0")
-    implementation("com.google.android.libraries.places:places:3.4.0") // Consolidated Places dependency
+    implementation(libs.material.v1110)
+    implementation(libs.places.v431) // Consolidated Places dependency
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation(libs.firebase.storage.ktx)
     implementation(libs.androidx.work.runtime.ktx) // Use the latest version available
@@ -77,9 +77,10 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation ("com.github.bumptech.glide:glide:4.16.0") // Add this line (check for the latest version)
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
-    implementation ("de.hdodenhof:circleimageview:3.1.0")
+    implementation (libs.glide)
+    annotationProcessor (libs.compiler)
+    implementation (libs.circleimageview)
+    implementation (libs.androidx.core.splashscreen)
 
 
     //Google auth

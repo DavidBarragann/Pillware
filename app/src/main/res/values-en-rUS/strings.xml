@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pillware</string>
+    <string name="title_locations">Locations</string>
+    <string name="title_calendar">Calendar</string>
+    <string name="title_doctors">Doctors</string>
+    <string name="mensaje_completar">Please complete your profile</string>
+    <string name="usuario_desconocido">Username</string>
+    <string name="error_cargar_perfil">Error loading profile. Try again later.</string>
+</resources>
